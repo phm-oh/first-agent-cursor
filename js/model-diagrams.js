@@ -1,8 +1,6 @@
 /**
- * Lab-style Transformer cartoons for Step 6.
- * Inspired by OpenAI tokenizer playgrounds, Anthropic residual-stream
- * figures, and Microsoft Copilot explainers: one story, your tokens,
- * progressive detail. Not a real model.
+ * Classroom Transformer cartoons for Step 6.
+ * One story, the learner's tokens, progressive detail. Not a real model.
  */
 
 const NS = 'xmlns="http://www.w3.org/2000/svg"';
@@ -191,7 +189,7 @@ function embeddingDiagram(lesson) {
         <text x="380" y="172" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>คำที่ความหมายใกล้กัน จะได้จุดที่อยู่ใกล้กัน — สลับลำดับแล้วจุดไม่เหมือนเดิม</text>
       </g>
       <g class="d-fade d-d1">${vectors}</g>
-      <text class="d-fade d-d3" x="380" y="342" text-anchor="middle" fill="#94a3b8" font-size="13" ${FONT}>ได้สมุดโน้ตหนึ่งแถวต่อหนึ่ง Token พร้อมให้ Attention อ่าน</text>
+      <text class="d-fade d-d3" x="380" y="342" text-anchor="middle" fill="#94a3b8" font-size="13" ${FONT}>ตัวเลขในกล่องเป็นภาพสอน · ได้สมุดโน้ตหนึ่งแถวต่อหนึ่ง Token</text>
     </svg>
   `;
 }
@@ -239,9 +237,9 @@ function attentionDiagram(lesson) {
       <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>Token ท้ายสุดมองย้อนในหน้าต่างของคุณ — น้ำหนักสูง = อ่านมาก</text>
       ${tokenSlots(tokens)}
       <path class="d-trace" d="M${from.cx} 100 C ${(from.cx + to.cx) / 2} 150, ${(from.cx + to.cx) / 2} 150, ${to.cx} 100" fill="none" stroke="#fb7185" stroke-width="3" marker-end="url(#arr-hot)"/>
-      <text class="d-fade d-d1" x="380" y="128" text-anchor="middle" fill="#fda4af" font-size="13" ${FONT}>«${qText}» อ่าน «${kText}» เป็นหลัก — นี่คือบริบท ไม่ใช่ความจำระยะยาว</text>
+      <text class="d-fade d-d1" x="380" y="128" text-anchor="middle" fill="#fda4af" font-size="13" ${FONT}>«${qText}» อ่าน «${kText}» เป็นหลัก — ภาพสอน ไม่ใช่ค่าที่โมเดลคำนวณ</text>
       <g>
-        <text x="148" y="158" text-anchor="middle" fill="#94a3b8" font-size="11" ${FONT}>น้ำหนักในหน้าต่าง</text>
+        <text x="148" y="158" text-anchor="middle" fill="#94a3b8" font-size="11" ${FONT}>น้ำหนัก (ภาพสอน · สมมติ)</text>
         ${headLabels}${sideLabels}${heat}
       </g>
       <g class="d-fade d-d2">
@@ -301,7 +299,7 @@ function generationDiagram(lesson) {
   return `
     <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพ Generation">
       ${defs()}
-      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>หัวใจที่ OpenAI / Claude / Copilot ใช้สอน: ทายแค่ตัวถัดไป แล้ววนใหม่</text>
+      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>หัวใจที่ใช้สอน: ทายแค่ตัวถัดไป แล้ววนใหม่</text>
       ${shown
         .map((token, i) => tokenBox(48 + i * 120, 46, token.text, "มีแล้ว", token.color))
         .join("")}
@@ -312,7 +310,7 @@ function generationDiagram(lesson) {
       <text x="520" y="88" fill="#64748b" font-size="11" ${FONT}>แตกเป็นคะแนนของทั้งคลังคำ</text>
       <g class="d-fade d-d1">
         <rect x="48" y="128" width="430" height="168" rx="16" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)"/>
-        <text x="68" y="154" fill="#e4e4e7" font-size="13" ${FONT}>${lesson.fromUser ? "ตัวแรกของคำตอบจำลองคุณ" : "ตัวอย่างความน่าจะเป็น"}</text>
+        <text x="68" y="154" fill="#e4e4e7" font-size="13" ${FONT}>ความน่าจะเป็น (ภาพสอน · สมมติ)</text>
         ${bars}
       </g>
       <g class="d-fade d-d2">
@@ -366,7 +364,7 @@ export function mountThinkLesson(container, index, lesson) {
   const source = ctx.fromUser ? "ใช้ Token จากข้อความที่คุณพิมพ์" : "ยังไม่มีข้อความพอ — ใช้ตัวอย่างในห้อง";
   container.innerHTML = `
     <div class="think-lab">
-      <p class="think-disclaimer thai">${source} · ไม่ใช่โมเดลจริง</p>
+      <p class="think-disclaimer thai">${source} · น้ำหนักและเปอร์เซ็นต์เป็นภาพสอน ไม่ใช่ค่าที่โมเดลคำนวณ</p>
       <div class="think-highway glass panel p-3">${residualHighway(index)}</div>
       <div class="think-diagram glass panel p-3">${diagramForThink(index, ctx)}</div>
     </div>
@@ -379,12 +377,12 @@ export function mountModelPeek(container) {
     <div class="think-lab">
       <div class="think-highway glass panel p-3">${residualHighway(-1)}</div>
       <div class="glass panel p-4 sm:p-5">
-        <p class="help-kicker">แบบที่ห้องแล็บอธิบาย</p>
+        <p class="help-kicker">ก่อนเข้าชั้นในโมเดล</p>
         <h3 class="thai text-base font-medium mt-2">ทาย Token ถัดไป — ที่เหลือเป็นวิธีทำให้ทายได้ดี</h3>
         <ol class="mt-3 space-y-2 thai text-sm text-zinc-300 leading-relaxed list-decimal pl-5">
-          <li>OpenAI เริ่มจากของจริงในกล่องแชท: หั่นข้อความคุณเป็น Token สี แล้วถามว่าตัวต่อไปคืออะไร</li>
-          <li>Anthropic วาดเส้นหลัก (residual) ให้เห็นว่า Attention อ่านบริบท แล้ว FFN คิดต่อที่จุดนั้น</li>
-          <li>Microsoft เดินเป็นขั้น มีประโยคเดียวต่อจอ และแยกว่าอะไรส่งเข้าโมเดล อะไรเป็นแค่ภาพสอน</li>
+          <li>เริ่มจากข้อความจริงในกล่อง: หั่นเป็น Token สี แล้วถามว่าตัวต่อไปคืออะไร</li>
+          <li>เส้นหลักคือสมุดโน้ตที่ส่งต่อชั้นต่อชั้น Attention อ่านบริบท FFN คิดต่อที่จุดนั้น</li>
+          <li>เดินทีละขั้น ประโยคเดียวต่อจอ และแยกว่าอะไรมาจากข้อความคุณ อะไรเป็นภาพสอน</li>
         </ol>
       </div>
     </div>
