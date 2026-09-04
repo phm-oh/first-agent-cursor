@@ -16,6 +16,7 @@ import {
   usagePercent,
 } from "./models.js";
 import { loadTemplates, generateMockResponse } from "./mock.js";
+import { loadLessons, getLessons, getLesson } from "./lessons.js";
 import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js";
 import { renderStage, THINK_STAGES } from "./stages.js";
 import { mountVirtualChips } from "./virtual-chips.js";
@@ -23,13 +24,6 @@ import { mountDataFlow, typeText } from "./animation.js";
 import { mountThinkLesson, mountModelPeek, pickLessonTokens } from "./model-diagrams.js";
 
 const THINK_DWELL_MS = 11000;
-
-const SAMPLE_SYSTEM =
-  "คุณเป็นผู้ช่วยสอนเรื่อง Token ของโมเดลภาษา ตอบกระชับ ชัดเจน และใช้ภาษาที่นักเรียนเข้าใจได้";
-
-const SAMPLE_USER = `ช่วยอธิบายให้หน่อยว่า Token คืออะไร ต่างจากคำอย่างไร และทำไม Context Window ถึงสำคัญเมื่อเราคุยกับ ChatGPT
-
-ฉันอยากได้ตัวอย่างภาษาไทยกับภาษาอังกฤษสั้น ๆ เพื่อเอาไปสอนในห้องเรียน`;
 
 const OVERFLOW_SEED = `ช่วยสรุปบทเรียนเรื่อง Token และ Context Window ให้ยาวพอสำหรับสาธิต Overflow
 
@@ -54,6 +48,8 @@ const state = {
   thinkIndex: 0,
   thinkPlaying: true,
   thinkDepth: "simple",
+  presenting: false,
+  lessonId: "token-basics",
 };
 
 let debounceTimer = null;
@@ -693,9 +689,9 @@ function exitSimulation() {
   setCaption("กลับไปแก้ไขข้อความได้แล้ว เมื่อพร้อมกดเริ่มกระบวนการอีกครั้ง");
 }
 
-function buildOverflowText(limit) {
+function buildOverflowText(limit, systemText) {
   const padTokens = Math.max(1, tokenizeText(OVERFLOW_PAD).length);
-  const seedTokens = tokenizeText(SAMPLE_SYSTEM + "\n" + OVERFLOW_SEED).length;
+  const seedTokens = tokenizeText(`${systemText || ""}\n${OVERFLOW_SEED}`).length;
   const need = Math.max(padTokens, limit + 1200 - seedTokens);
   const repeats = Math.ceil(need / padTokens);
   return OVERFLOW_SEED + OVERFLOW_PAD.repeat(repeats);
@@ -710,30 +706,82 @@ function clearAttachments() {
   if (input) input.value = "";
 }
 
-function loadSample(kind) {
+function renderLessons() {
+  const select = $("lesson-select");
+  if (!select) return;
+  const items = getLessons();
+  select.innerHTML = items
+    .map(
+      (lesson) =>
+        `<option value="${escapeHtml(lesson.id)}" ${lesson.id === state.lessonId ? "selected" : ""}>${escapeHtml(lesson.title)}</option>`
+    )
+    .join("");
+  const current = getLesson(state.lessonId);
+  const hint = $("lesson-hint");
+  if (hint && current) hint.textContent = current.hint || "เลือกบทแล้วกดโหลด";
+}
+
+function applyLesson(id) {
+  const lesson = getLesson(id);
+  if (!lesson) return;
   if (state.started) exitSimulation();
   clearAttachments();
   renderFiles();
-  state.systemPrompt = SAMPLE_SYSTEM;
-  $("system-input").value = SAMPLE_SYSTEM;
-  if (kind === "overflow") {
-    state.modelId = "model-f";
+  state.lessonId = lesson.id;
+  state.systemPrompt = lesson.system || "";
+  $("system-input").value = state.systemPrompt;
+  if (lesson.overflow) {
+    state.modelId = lesson.modelId || "model-f";
     const limit = getModelById(state.modelId).contextLimit;
-    state.turns = [{ id: uid(), role: "user", content: buildOverflowText(limit) }];
+    state.turns = [{ id: uid(), role: "user", content: buildOverflowText(limit, state.systemPrompt) }];
   } else {
-    state.turns = [{ id: uid(), role: "user", content: SAMPLE_USER }];
+    if (lesson.modelId) state.modelId = lesson.modelId;
+    const turns = Array.isArray(lesson.turns) && lesson.turns.length ? lesson.turns : [{ role: "user", content: "" }];
+    state.turns = turns.map((turn) => ({
+      id: uid(),
+      role: turn.role === "assistant" ? "assistant" : "user",
+      content: turn.content || "",
+    }));
   }
   renderTurns();
   renderModels();
+  renderLessons();
   state.report = buildReport();
   renderVisualization();
   renderLiveBadge();
   setCaption(
-    kind === "overflow"
-      ? "โหลดตัวอย่าง Overflow แล้ว — Teaching Mini ถูกเลือกเพื่อให้เห็นส่วนที่ล้นเป็นสีแดง"
-      : "โหลดตัวอย่างสำหรับห้องเรียนแล้ว สังเกตจำนวน Token แล้วกดเริ่มกระบวนการได้"
+    lesson.overflow
+      ? "โหลด Overflow แล้ว — Teaching Mini ถูกเลือกเพื่อให้เห็นส่วนที่ล้นเป็นสีแดง"
+      : `โหลดบท «${lesson.title}» แล้ว สังเกตจำนวน Token แล้วกดเริ่มกระบวนการได้`
   );
   refreshIcons();
+}
+
+function updatePresentButton() {
+  const btn = $("present-btn");
+  if (!btn) return;
+  btn.setAttribute("aria-pressed", state.presenting ? "true" : "false");
+  btn.title = state.presenting ? "ออกจากโหมดพรีเซนต์" : "โหมดพรีเซนต์เต็มจอ";
+  btn.innerHTML = state.presenting
+    ? '<i data-lucide="minimize-2" class="w-4 h-4 mx-auto"></i>'
+    : '<i data-lucide="maximize-2" class="w-4 h-4 mx-auto"></i>';
+  refreshIcons();
+}
+
+function setPresenting(on) {
+  state.presenting = Boolean(on);
+  document.body.classList.toggle("is-presenting", state.presenting);
+  updatePresentButton();
+  if (state.presenting) {
+    document.documentElement.requestFullscreen?.().catch(() => {});
+    setCaption("โหมดพรีเซนต์ · ลูกศรซ้ายขวาเดินขั้น · Esc เพื่อออก");
+  } else if (document.fullscreenElement) {
+    document.exitFullscreen?.().catch(() => {});
+  }
+}
+
+function togglePresenting() {
+  setPresenting(!state.presenting);
 }
 
 async function handleFiles(fileList) {
@@ -791,8 +839,12 @@ function bindEvents() {
   $("reset-btn").addEventListener("click", goBack);
   $("next-btn").addEventListener("click", goNext);
   $("restart-btn").addEventListener("click", exitSimulation);
-  $("sample-btn").addEventListener("click", () => loadSample("normal"));
-  $("overflow-btn").addEventListener("click", () => loadSample("overflow"));
+  $("lesson-load")?.addEventListener("click", () => applyLesson($("lesson-select").value));
+  $("lesson-select")?.addEventListener("change", () => {
+    state.lessonId = $("lesson-select").value;
+    renderLessons();
+  });
+  $("present-btn")?.addEventListener("click", togglePresenting);
   $("mode-overview").addEventListener("click", () => setViewMode("overview"));
   $("mode-tokens").addEventListener("click", () => setViewMode("tokens"));
   $("theme-toggle").addEventListener("click", toggleTheme);
@@ -818,7 +870,18 @@ function bindEvents() {
       if (!state.started) startProcess();
       return;
     }
-    if (state.started && event.target.tagName !== "TEXTAREA" && event.target.tagName !== "INPUT") {
+    const typing = event.target.tagName === "TEXTAREA" || event.target.tagName === "INPUT" || event.target.tagName === "SELECT";
+    if (event.key === "Escape" && state.presenting) {
+      event.preventDefault();
+      setPresenting(false);
+      return;
+    }
+    if (!typing && (event.key === "p" || event.key === "P") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      togglePresenting();
+      return;
+    }
+    if (state.started && !typing) {
       if (event.key === "ArrowRight") {
         event.preventDefault();
         goNext();
@@ -827,6 +890,13 @@ function bindEvents() {
         event.preventDefault();
         goBack();
       }
+    }
+  });
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && state.presenting) {
+      state.presenting = false;
+      document.body.classList.remove("is-presenting");
+      updatePresentButton();
     }
   });
 }
@@ -860,8 +930,9 @@ async function boot() {
   setViewMode("overview");
   updateChrome();
 
-  await Promise.all([loadModels(), loadTemplates()]);
+  await Promise.all([loadModels(), loadTemplates(), loadLessons()]);
   renderModels();
+  renderLessons();
   state.report = buildReport();
   renderVisualization();
   renderLiveBadge();
