@@ -348,6 +348,8 @@ body.is-presenting #present-btn {
   padding: 12px 14px;
   outline: none;
   resize: vertical;
+  line-height: 1.65;
+  max-width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -998,6 +1000,14 @@ html.light .soft-hover:hover {
 }
 
 @media (max-width: 640px) {
+  .app-main {
+    padding: 12px !important;
+  }
+
+  #input-aside.panel {
+    padding: 14px;
+  }
+
   .brand-mark {
     width: 32px;
     height: 32px;
@@ -1026,8 +1036,9 @@ html.light .soft-hover:hover {
   }
 
   .caption-icon,
-  .caption-kicker {
-    display: none;
+  .caption-kicker,
+  #present-btn {
+    display: none !important;
   }
 
   #caption {
@@ -1048,6 +1059,7 @@ html.light .soft-hover:hover {
     min-width: 0;
     padding-left: 8px;
     padding-right: 8px;
+    white-space: nowrap;
   }
 
   .step-item {
@@ -1121,7 +1133,15 @@ html.light .soft-hover:hover {
   }
 
   .dropzone {
-    padding: 14px 12px;
+    padding: 10px 8px;
+  }
+
+  .dropzone .w-5 {
+    display: none;
+  }
+
+  .dropzone p.text-\[11px\] {
+    display: none;
   }
 
   button {

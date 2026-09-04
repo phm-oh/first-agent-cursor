@@ -65,7 +65,7 @@
             </div>
             <button
               id="present-btn"
-              class="h-10 w-10 rounded-xl border hairline soft-fill soft-hover transition"
+              class="hidden sm:grid h-10 w-10 rounded-xl border hairline soft-fill soft-hover transition place-items-center"
               title="โหมดนำเสนอเต็มจอ"
               type="button"
               aria-pressed="false"
@@ -96,12 +96,12 @@
 
       <main class="app-main max-w-[1440px] mx-auto w-full grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-4 sm:gap-5 px-4 sm:px-6 py-4 sm:py-5">
         <aside id="input-aside" class="glass panel p-4 sm:p-5 h-fit lg:sticky lg:top-5 min-w-0">
-          <div class="flex items-center justify-between mb-4">
-            <div>
+          <div class="flex items-start justify-between gap-2 mb-4 min-w-0">
+            <div class="min-w-0">
               <p class="help-kicker">ข้อความเข้า</p>
-              <h2 class="thai text-lg font-semibold mt-1">สิ่งที่จะส่งเข้าโมเดล</h2>
+              <h2 class="thai text-base sm:text-lg font-semibold mt-1 leading-snug">สิ่งที่จะส่งเข้าโมเดล</h2>
             </div>
-            <span id="live-badge" class="mono text-[11px] px-2 py-1 rounded-full bg-indigo-500/15 text-indigo-300">0 Token</span>
+            <span id="live-badge" class="mono text-[11px] px-2 py-1 rounded-full bg-indigo-500/15 text-indigo-300 shrink-0">0 Token</span>
           </div>
 
           <label class="block text-xs text-zinc-400 mb-1.5 thai">ข้อความระบบ</label>
@@ -224,13 +224,13 @@
       <footer class="caption-bar px-4 sm:px-6 py-3 sm:py-4">
         <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 min-w-0">
           <div class="flex items-start gap-3 min-w-0">
-            <div class="caption-icon mt-0.5 h-9 w-9 rounded-xl bg-indigo-500/15 text-indigo-300 grid place-items-center shrink-0">
+            <div class="caption-icon hidden sm:grid mt-0.5 h-9 w-9 rounded-xl bg-indigo-500/15 text-indigo-300 place-items-center shrink-0">
               <i data-lucide="graduation-cap" class="w-4 h-4"></i>
             </div>
             <div class="min-w-0">
-              <p class="caption-kicker text-xs text-zinc-500">คำอธิบายประกอบ</p>
+              <p class="caption-kicker hidden sm:block text-xs text-zinc-500">คำอธิบายประกอบ</p>
               <p id="caption" class="thai text-sm text-zinc-200 mt-0.5">
-                พิมพ์ข้อความด้านซ้าย แล้วดูด้านขวาว่า Token ถูกใช้ไปเท่าไรในหน้าต่างบริบท
+                พิมพ์ข้อความด้านบน แล้วดูว่า Token ถูกใช้ไปเท่าไรในหน้าต่างบริบท
               </p>
             </div>
           </div>
