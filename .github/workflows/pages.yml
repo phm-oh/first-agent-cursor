@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main, cursor/contextflow-phase1-ec3e]
+    branches: [main, "cursor/**"]
   workflow_dispatch:
 
 permissions:

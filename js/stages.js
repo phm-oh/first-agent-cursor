@@ -6,22 +6,66 @@ export const THINK_STAGES = [
   {
     id: "embed",
     title: "Embedding",
-    detail: "แต่ละ Token ถูกแปลงเป็นเวกเตอร์ตัวเลข เพื่อให้โมเดลคำนวณได้",
+    titleTh: "ฝังความหมาย",
+    detail: "รหัส Token ยังไม่มีความหมาย — ต้องแปลงเป็นเวกเตอร์แล้วบอกตำแหน่งก่อนเข้าบล็อก",
+    caption: "Embedding คือตารางแปลงรหัส Token เป็นจุดในปริภูมิความหมาย แล้วบวกตำแหน่งในประโยค",
+    example: "ประโยคสอน: แมว กิน ปลา → ได้สามรหัส เช่น 4821, 8910, 3344 แล้วกลายเป็นสามเวกเตอร์คนละอัน",
+    inModel: "ชั้นล่างสุดของโครงโมเดล ก่อนเข้า Transformer block — ดูกล่อง Embedding ด้านซ้าย",
+    bullets: [
+      "หลัง Tokenize เหลือแค่เลข ID — โมเดลยังไม่รู้ว่า แมว ใกล้ แมวตัว หรือ หมา",
+      "ตาราง Embedding มีแถวเท่าจำนวนคำในคลัง แต่ละแถวเป็นเวกเตอร์หลายร้อยถึงหลายพันมิติ",
+      "คำที่ความหมายใกล้กัน มักได้เวกเตอร์ที่ «อยู่ใกล้กัน» ในปริภูมินี้",
+      "บวก Positional Encoding เพื่อแยก แมว กิน ปลา ออกจาก ปลา กิน แมว",
+      "ผลลัพธ์: ทุกช่องใน Context Window มีเวกเตอร์หนึ่งอัน พร้อมให้ Attention อ่าน",
+    ],
   },
   {
     id: "attention",
     title: "Attention",
-    detail: "โมเดลดูว่า Token ใดสัมพันธ์กัน เช่น คำสรรพนามชี้กลับไปคำนาม",
+    titleTh: "ความสนใจ",
+    detail: "แต่ละ Token มอง Token อื่นในหน้าต่าง แล้วชั่งน้ำหนักว่าจะอ่านใครมากน้อย",
+    caption: "Self-Attention ให้ Token อ่านกันใน Context Window ตามน้ำหนัก — นี่คือจุดที่บริบทถูกดึงมาใช้",
+    example: "ในประโยค «แมวกินปลา เพราะมันหิว» คำว่า มัน ให้น้ำหนักสูงกับ แมว ไม่ใช่กับ ปลา",
+    inModel: "กล่อง Self-Attention ในบล็อกกลาง ทำซ้ำหลายหัว (multi-head) และหลายชั้น",
+    bullets: [
+      "จากเวกเตอร์เดิมสร้างสามชุด: Query (ถาม) Key (กุญแจ) Value (ค่าที่จะอ่าน)",
+      "คะแนน = Query คูณ Key แล้ว softmax เป็นน้ำหนัก 0–1 รวมกันได้ประมาณ 1",
+      "น้ำหนักสูง = อ่านมาก น้ำหนักต่ำ = มองผ่าน — เลยจับสรรพนามกับคำนามได้",
+      "ทำขนานทั้งลำดับในหน้าต่างเดียวกัน จึงเห็นประโยคยาวได้ในรอบเดียว",
+      "Multi-head คือมองหลายมุมพร้อมกัน เช่น ใครทำ / ทำอะไร / ชี้กลับไปใคร",
+    ],
   },
   {
     id: "ffn",
     title: "Feed-forward",
-    detail: "ชั้นคำนวณเพิ่มเติมเพื่อสรุปความหมายของลำดับ Token",
+    titleTh: "ชั้นแปลงความหมาย",
+    detail: "หลังได้อ่านบริบทแล้ว แปลงเวกเตอร์ทีละตำแหน่ง เพื่อคิดต่อ ไม่ผสมข้าม Token",
+    caption: "Feed-forward ไม่ดึง Token อื่นมาปน — มันแปลงความหมายของตำแหน่งนั้นหลัง Attention รวมบริบทแล้ว",
+    example: "ตำแหน่งคำว่า มัน ตอนนี้มีบริบทของ แมว แล้ว FFN ช่วยสรุปเป็น «สรรพนามชี้แมว»",
+    inModel: "กล่อง Feed-forward ในบล็อกเดียวกับ Attention — คู่นี้ถูกซ้อนหลายสิบชั้น",
+    bullets: [
+      "ต่างจาก Attention: ชั้นนี้ดูทีละตำแหน่ง ไม่ได้ดึงของช่องอื่นมาปนในรอบนี้",
+      "โครงคล้าย MLP สั้น: ขยายมิติ (มักประมาณ 4 เท่า) → ฟังก์ชันไม่เชิงเส้น → บีบกลับ",
+      "Residual บวกของเดิมเข้าไป LayerNorm ช่วยให้ซ้อนชั้นซ้ำ ๆ ได้โดยไม่พัง",
+      "บล็อก Attention + FFN คือ «ตัวโมเดล» ส่วนใหญ่ ไม่ใช่ Embedding หรือ LM Head",
+      "ยิ่งซ้อนหลายชั้น ยิ่งผสมบริบทลึก แต่ละชั้นยังทำงานใน Context Window เดิม",
+    ],
   },
   {
     id: "generate",
     title: "Generation",
-    detail: "โมเดลทาย Token ถัดไปทีละชิ้น จนประกอบเป็นคำตอบ",
+    titleTh: "สร้างคำตอบ",
+    detail: "ทาย Token ถัดไปทีละตัว แปะต่อท้าย แล้ววนทั้งบล็อกใหม่จนกว่าจะจบ",
+    caption: "ขาออกเกิดทีละ Token — เลือกจากคลัง แล้ววนกลับไป Embedding ไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
+    example: "มีแล้ว: แมว กิน  → โมเดลให้ ปลา 62%, อาหาร 24%, นม 14% แล้วเลือก ปลา ต่อท้าย",
+    inModel: "กล่อง LM Head บนสุด หลังจากผ่านบล็อกมาแล้ว — แล้วลูกศรวนกลับไปต้นลำดับ",
+    bullets: [
+      "เวกเตอร์ตำแหน่งล่าสุดผ่าน LM Head กลายเป็นคะแนนของทุก Token ในคลัง",
+      "softmax แปลงคะแนนเป็นความน่าจะเป็น รวมกันได้ 1 เช่น ปลา 62%",
+      "เลือกตัวที่สูงสุด หรือสุ่มตามอุณหภูมิ — ได้ออกมาเพียง 1 Token",
+      "Token ใหม่ถูกต่อท้าย ลำดับใน Context Window ยาวขึ้น 1 แล้ววน Embedding ใหม่",
+      "หยุดเมื่อเจอจุดจบ หรือครบจำนวนที่กำหนด — นี่คือที่มาของคำตอบทีละคำบนหน้าจอ",
+    ],
   },
 ];
 
@@ -168,18 +212,39 @@ function renderContextStage(ctx) {
 }
 
 function renderCostStage(ctx) {
-  const { report, models, model, formatTokens, formatUsd, calcCostUsd } = ctx;
+  const { report, models, model, formatTokens, formatUsd, calcCostUsd, outputTokens } = ctx;
   const input = report.counts.input;
+  const output = outputTokens.length;
   const rows = models
     .map((item) => {
-      const cost = calcCostUsd(input, item.inputPricePerMillion);
+      const inCost = calcCostUsd(input, item.inputPricePerMillion);
+      const outCost = calcCostUsd(output, item.outputPricePerMillion);
       const overflow = Math.max(0, input - item.contextLimit);
-      const active = item.id === model.id;
-      return `<tr class="${active ? "row-active" : ""}">
-        <td class="thai">${escape(ctx, item.name)}${active ? ' <span class="text-indigo-300">← ที่เลือก</span>' : ""}</td>
-        <td class="mono">${formatTokens(item.contextLimit)}</td>
-        <td class="mono">${formatUsd(cost)}</td>
-        <td class="mono ${overflow ? "text-rose-400" : "text-emerald-300"}">${overflow ? `ล้น ${formatTokens(overflow)}` : "พอดี"}</td>
+      return {
+        item,
+        inCost,
+        outCost,
+        total: inCost + outCost,
+        overflow,
+        active: item.id === model.id,
+      };
+    })
+    .sort((a, b) => a.total - b.total);
+  const cheapest = rows[0]?.item.id;
+  const selected = rows.find((row) => row.active) || rows[0];
+  const body = rows
+    .map((row) => {
+      const mark = row.active ? ' <span class="text-indigo-300">← ที่เลือก</span>' : "";
+      const cheap = row.item.id === cheapest ? ' <span class="text-emerald-300">ถูกสุด</span>' : "";
+      return `<tr class="${row.active ? "row-active" : ""}">
+        <td class="thai">${escape(ctx, row.item.name)}${mark}${cheap}</td>
+        <td class="mono">${formatTokens(row.item.contextLimit)}</td>
+        <td class="mono">${formatUsd(row.item.inputPricePerMillion)}</td>
+        <td class="mono">${formatUsd(row.item.outputPricePerMillion)}</td>
+        <td class="mono">${formatUsd(row.inCost)}</td>
+        <td class="mono">${formatUsd(row.outCost)}</td>
+        <td class="mono">${formatUsd(row.total)}</td>
+        <td class="mono ${row.overflow ? "text-rose-400" : "text-emerald-300"}">${row.overflow ? `ล้น ${formatTokens(row.overflow)}` : "พอดี"}</td>
       </tr>`;
     })
     .join("");
@@ -187,23 +252,41 @@ function renderCostStage(ctx) {
   return `
     <div class="stage-head">
       <p class="help-kicker">Step 4</p>
-      <h2 class="thai text-xl font-semibold mt-1">ต้นทุนขาเข้าเบื้องต้น</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ราคาคิดจากจำนวน Token × ราคาต่อล้าน — ตารางละเอียดขึ้นจะมาใน Phase 3</p>
+      <h2 class="thai text-xl font-semibold mt-1">เทียบต้นทุนหลายโมเดล</h2>
+      <p class="thai text-sm text-zinc-400 mt-2">ใช้ Token ขาเข้า ${formatTokens(input)} และขาออกจำลอง ${formatTokens(output)} คูณราคาต่อล้านของแต่ละรุ่น</p>
     </div>
     <div class="glass panel p-4 mt-5 overflow-x-auto">
       <table class="cost-table">
         <thead>
           <tr>
             <th>โมเดล</th>
-            <th>Limit</th>
+            <th>Context</th>
+            <th>In / 1M</th>
+            <th>Out / 1M</th>
             <th>ค่า Input</th>
-            <th>พอดีหน้าต่าง?</th>
+            <th>ค่า Output</th>
+            <th>รวมรอบนี้</th>
+            <th>หน้าต่าง</th>
           </tr>
         </thead>
-        <tbody>${rows}</tbody>
+        <tbody>${body}</tbody>
       </table>
     </div>
-    <p class="thai text-sm text-zinc-400 mt-4">ขาเข้านี้ประมาณ ${formatUsd(calcCostUsd(input, model.inputPricePerMillion))} บนโมเดลที่เลือก · ยังไม่รวมขาออก</p>
+    <article class="glass panel p-4 sm:p-5 mt-4">
+      <p class="help-kicker">สูตรคิดราคาของรุ่นที่เลือก</p>
+      <p class="thai text-sm text-zinc-300 mt-3 leading-relaxed">
+        Input = ${formatTokens(input)} ÷ 1,000,000 × ${formatUsd(selected.item.inputPricePerMillion)}
+        = <span class="mono text-indigo-300">${formatUsd(selected.inCost)}</span>
+      </p>
+      <p class="thai text-sm text-zinc-300 mt-2 leading-relaxed">
+        Output = ${formatTokens(output)} ÷ 1,000,000 × ${formatUsd(selected.item.outputPricePerMillion)}
+        = <span class="mono text-emerald-300">${formatUsd(selected.outCost)}</span>
+      </p>
+      <p class="thai text-sm mt-3">รวมรอบนี้บน ${escape(ctx, selected.item.name)} =
+        <span class="mono">${formatUsd(selected.total)}</span>
+      </p>
+    </article>
+    <p class="thai text-sm text-zinc-400 mt-4">เรียงจากรวมถูกสุดขึ้นก่อน · Output ยังเป็นคำตอบจำลอง ไม่ใช่ราคาบิลจริง · ส่วนที่ล้นคิดราคาไม่ได้เพราะโมเดลไม่อ่าน</p>
   `;
 }
 
@@ -228,29 +311,53 @@ function renderDispatchStage(ctx) {
       <p class="thai text-sm text-zinc-400 mt-4">โครงที่ใช้สอน: start → system → user → end ตามด้วยเนื้อหา ${formatTokens(report.counts.input)} tokens</p>
       <p class="mono text-xs text-indigo-300 mt-2">+${extras} special tokens (เชิงแนวคิด)</p>
     </div>
+    <div id="model-peek" class="mt-4"></div>
   `;
 }
 
 function renderThinkStage(ctx) {
   const index = ctx.thinkIndex % THINK_STAGES.length;
+  const current = THINK_STAGES[index];
   const cards = THINK_STAGES.map((stage, i) => {
     const active = i === index;
-    return `<article class="think-card ${active ? "active" : ""}" data-think="${i}">
-      <p class="mono text-xs text-zinc-500">0${i + 1}</p>
+    return `<button type="button" class="think-card ${active ? "active" : ""}" data-think="${i}">
+      <p class="mono text-xs text-zinc-500">0${i + 1} / 04</p>
       <h3 class="font-medium mt-1">${escape(ctx, stage.title)}</h3>
-      <p class="thai text-sm text-zinc-400 mt-2 leading-relaxed">${escape(ctx, stage.detail)}</p>
-    </article>`;
+      <p class="thai text-xs text-zinc-500 mt-1">${escape(ctx, stage.titleTh)}</p>
+    </button>`;
   }).join("");
+  const bullets = current.bullets
+    .map((item) => `<li class="thai text-sm text-zinc-300 leading-relaxed">${escape(ctx, item)}</li>`)
+    .join("");
 
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 6</p>
-      <h2 class="thai text-xl font-semibold mt-1">จำลองการประมวลผล</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">จุดที่สว่างคือขั้นที่กำลังคิด — เป็นภาพแนวคิด ไม่ใช่โมเดลจริง</p>
+      <p id="think-kicker" class="help-kicker">Step 6 · ชั้นในโมเดล · 0${index + 1} / 04</p>
+      <h2 class="thai text-xl font-semibold mt-1">${escape(ctx, current.title)} — ${escape(ctx, current.titleTh)}</h2>
+      <p id="think-status" class="thai text-sm text-zinc-400 mt-2">${escape(ctx, current.detail)}</p>
     </div>
-    <div id="think-flow" class="glass panel p-4 mt-5 overflow-hidden"></div>
-    <p id="think-status" class="thai text-sm text-indigo-300 mt-3">${escape(ctx, THINK_STAGES[index].title)} · ${escape(ctx, THINK_STAGES[index].detail)}</p>
-    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3 mt-4">${cards}</div>
+    <div id="think-dwell" class="think-dwell playing mt-4" style="--think-ms: 11s"><span></span></div>
+    <p class="text-[11px] text-zinc-500 thai mt-2">แถบนี้เต็มใน 11 วินาทีต่อชั้น — กดหยุดอัตโนมัติถ้าจะอธิบายเอง</p>
+    <div id="think-flow" class="mt-4"></div>
+    <div class="grid md:grid-cols-2 gap-3 mt-4">
+      <article class="glass panel p-4 sm:p-5">
+        <p class="help-kicker">อ่านให้จบก่อนไปขั้นย่อยถัดไป</p>
+        <ul id="think-bullets" class="mt-3 space-y-2 list-disc pl-5">${bullets}</ul>
+      </article>
+      <article class="glass panel p-4 sm:p-5">
+        <p class="help-kicker">ตัวอย่างในห้อง</p>
+        <p id="think-example" class="thai text-sm text-zinc-300 mt-3 leading-relaxed">${escape(ctx, current.example)}</p>
+        <p class="help-kicker mt-4">ตำแหน่งในโครงโมเดล</p>
+        <p id="think-in-model" class="thai text-sm text-zinc-300 mt-2 leading-relaxed">${escape(ctx, current.inModel)}</p>
+      </article>
+    </div>
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-2 mt-4">${cards}</div>
+    <div class="flex flex-wrap gap-2 mt-4">
+      <button type="button" id="think-prev" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">ย้อนขั้นย่อย</button>
+      <button type="button" id="think-pause" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">หยุดอัตโนมัติ</button>
+      <button type="button" id="think-next" class="btn-primary h-10 px-4 rounded-xl text-xs font-semibold thai">ขั้นย่อยถัดไป</button>
+    </div>
+    <p class="text-[11px] text-zinc-500 thai mt-2">เดินช้าเป็นห้องเรียน · กดการ์ดเพื่อกระโดด · จบ Generation แล้วค่อยกด Next ของขั้น 7</p>
   `;
 }
 

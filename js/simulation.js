@@ -35,7 +35,7 @@ export const STEPS = [
     titleTh: "ต้นทุนโมเดล",
     titleEn: "Cost",
     caption:
-      "แต่ละโมเดลคิดราคาต่างกัน ระหว่าง Input และ Output — จำนวน Token คือตัวคูณราคา",
+      "เทียบราคา Input และ Output ของทุกโมเดลจาก Token รอบนี้ — รุ่นถูกสุดถูกไฮไลต์",
   },
   {
     id: 5,
@@ -51,7 +51,7 @@ export const STEPS = [
     titleTh: "ประมวลผลในโมเดล",
     titleEn: "Think",
     caption:
-      "ภายในโมเดลมีการคำนวณแบบ Attention แล้วค่อยสร้างคำตอบทีละ Token (เชิงแนวคิด)",
+      "เดินช้าในโมเดล: Embedding → Attention → Feed-forward → Generation อ่านให้จบทีละชั้น",
   },
   {
     id: 7,

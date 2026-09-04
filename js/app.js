@@ -19,7 +19,10 @@ import { loadTemplates, generateMockResponse } from "./mock.js";
 import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js";
 import { renderStage, THINK_STAGES } from "./stages.js";
 import { mountVirtualChips } from "./virtual-chips.js";
-import { mountDataFlow, mountThinkFlow, typeText } from "./animation.js";
+import { mountDataFlow, typeText } from "./animation.js";
+import { mountThinkLesson, mountModelPeek } from "./model-diagrams.js";
+
+const THINK_DWELL_MS = 11000;
 
 const SAMPLE_SYSTEM =
   "คุณเป็นผู้ช่วยสอนเรื่อง Token ของโมเดลภาษา ตอบกระชับ ชัดเจน และใช้ภาษาที่นักเรียนเข้าใจได้";
@@ -49,6 +52,7 @@ const state = {
   outputText: "",
   outputTokens: [],
   thinkIndex: 0,
+  thinkPlaying: true,
 };
 
 let debounceTimer = null;
@@ -437,16 +441,96 @@ function stopThinkLoop() {
 
 function startThinkLoop() {
   stopThinkLoop();
+  if (!state.thinkPlaying) return;
   thinkTimer = setInterval(() => {
-    state.thinkIndex = (state.thinkIndex + 1) % THINK_STAGES.length;
-    if (state.currentStep !== 6) return;
-    const stage = THINK_STAGES[state.thinkIndex];
-    document.querySelectorAll("[data-think]").forEach((card) => {
-      card.classList.toggle("active", Number(card.dataset.think) === state.thinkIndex);
+    if (!state.thinkPlaying || state.currentStep !== 6) return;
+    if (state.thinkIndex >= THINK_STAGES.length - 1) {
+      state.thinkPlaying = false;
+      stopThinkLoop();
+      updateThinkPauseLabel();
+      restartThinkDwell();
+      return;
+    }
+    state.thinkIndex += 1;
+    applyThinkView();
+  }, THINK_DWELL_MS);
+}
+
+function restartThinkDwell() {
+  const bar = $("think-dwell");
+  if (!bar) return;
+  bar.classList.toggle("playing", state.thinkPlaying);
+  const fill = bar.querySelector("span");
+  if (!fill) return;
+  fill.style.animation = "none";
+  void fill.offsetWidth;
+  if (state.thinkPlaying) {
+    fill.style.animation = "";
+  }
+}
+
+function applyThinkView() {
+  const stage = THINK_STAGES[state.thinkIndex];
+  if (!stage) return;
+  mountThinkLesson($("think-flow"), state.thinkIndex);
+  const status = $("think-status");
+  if (status) status.textContent = stage.detail;
+  const title = document.querySelector("#stage-root h2");
+  if (title) title.textContent = `${stage.title} — ${stage.titleTh}`;
+  const kicker = $("think-kicker");
+  if (kicker) kicker.textContent = `Step 6 · ชั้นในโมเดล · 0${state.thinkIndex + 1} / 04`;
+  const example = $("think-example");
+  if (example) example.textContent = stage.example;
+  const inModel = $("think-in-model");
+  if (inModel) inModel.textContent = stage.inModel;
+  document.querySelectorAll("[data-think]").forEach((card) => {
+    card.classList.toggle("active", Number(card.dataset.think) === state.thinkIndex);
+  });
+  const lesson = $("think-bullets");
+  if (lesson) {
+    lesson.innerHTML = stage.bullets
+      .map((item) => `<li class="thai text-sm text-zinc-300 leading-relaxed">${escapeHtml(item)}</li>`)
+      .join("");
+  }
+  setCaption(stage.caption);
+  updateThinkPauseLabel();
+  restartThinkDwell();
+}
+
+function updateThinkPauseLabel() {
+  const btn = $("think-pause");
+  if (!btn) return;
+  btn.textContent = state.thinkPlaying ? "หยุดอัตโนมัติ" : "เล่นช้าอัตโนมัติ";
+}
+
+function bindThinkControls() {
+  document.querySelectorAll("[data-think]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.thinkIndex = Number(btn.dataset.think);
+      state.thinkPlaying = false;
+      stopThinkLoop();
+      applyThinkView();
     });
-    const status = $("think-status");
-    if (status && stage) status.textContent = `${stage.title} · ${stage.detail}`;
-  }, 1400);
+  });
+  $("think-prev")?.addEventListener("click", () => {
+    state.thinkIndex = Math.max(0, state.thinkIndex - 1);
+    state.thinkPlaying = false;
+    stopThinkLoop();
+    applyThinkView();
+  });
+  $("think-next")?.addEventListener("click", () => {
+    state.thinkIndex = Math.min(THINK_STAGES.length - 1, state.thinkIndex + 1);
+    state.thinkPlaying = false;
+    stopThinkLoop();
+    applyThinkView();
+  });
+  $("think-pause")?.addEventListener("click", () => {
+    state.thinkPlaying = !state.thinkPlaying;
+    if (state.thinkPlaying) startThinkLoop();
+    else stopThinkLoop();
+    updateThinkPauseLabel();
+    restartThinkDwell();
+  });
 }
 
 function clearMotion() {
@@ -480,12 +564,17 @@ function renderCurrentStage() {
   }
   if (state.currentStep === 5) {
     stopMotion = mountDataFlow($("data-flow"));
+    mountModelPeek($("model-peek"));
   }
   if (state.currentStep === 6) {
-    stopMotion = mountThinkFlow($("think-flow"));
+    mountThinkLesson($("think-flow"), state.thinkIndex);
+    bindThinkControls();
+    updateThinkPauseLabel();
+    restartThinkDwell();
+    setCaption(THINK_STAGES[state.thinkIndex].caption);
   }
   if (state.currentStep === 7) {
-    stopMotion = typeText($("typed-output"), state.outputText, 14);
+    stopMotion = typeText($("typed-output"), state.outputText, 32);
   }
   if (state.currentStep === 8) {
     const host = $("output-chip-scroll");
@@ -512,7 +601,7 @@ function updateChrome() {
   const step = getStep(state.currentStep);
   if (!state.started) {
     $("step-progress").textContent = "ยังไม่เริ่มจำลอง — กดเริ่มกระบวนการเมื่อพร้อม";
-    $("phase-label").textContent = "Phase 4 · Simulation";
+    $("phase-label").textContent = "Phase 5 · Classroom";
   } else {
     $("step-progress").textContent = `ขั้นที่ ${state.currentStep} จาก ${TOTAL_STEPS} · ${step.titleTh}`;
     $("phase-label").textContent = `ขั้น ${state.currentStep} / ${TOTAL_STEPS}`;
@@ -524,8 +613,11 @@ function applySimulation() {
   renderSteps();
   updateChrome();
   if (state.started) {
-    if (state.currentStep === 6) startThinkLoop();
-    else stopThinkLoop();
+    if (state.currentStep === 6) {
+      state.thinkIndex = 0;
+      state.thinkPlaying = true;
+      startThinkLoop();
+    } else stopThinkLoop();
     renderCurrentStage();
   } else {
     stopThinkLoop();
