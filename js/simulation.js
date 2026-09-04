@@ -51,7 +51,7 @@ export const STEPS = [
     titleTh: "ประมวลผลในโมเดล",
     titleEn: "Think",
     caption:
-      "ห้องแล็บสอนเรื่องเดียว: ทาย Token ถัดไป — Embed อ่านรหัส, Attention อ่านหน้าต่าง, FFN คิดต่อ, แล้วเลือกตัวต่อไป",
+      "หัวใจที่ใช้สอน: ทาย Token ถัดไป — Embed อ่านรหัส, Attention อ่านหน้าต่าง, FFN คิดต่อ, แล้วเลือกตัวต่อไป",
   },
   {
     id: 7,
