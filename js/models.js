@@ -60,14 +60,14 @@ const FALLBACK_MODELS = [
   },
   {
     id: "model-f",
-    name: "Model F (Teaching Mini)",
+    name: "Model F (หน้าต่างเล็ก)",
     provider: "Classroom",
     contextLimit: 4096,
     inputPricePerMillion: 0.5,
     outputPricePerMillion: 1.5,
     tokenizer: "o200k_base",
     color: "#f43f5e",
-    description: "โมเดลจำลองหน้าต่างเล็ก สำหรับสอน Overflow อย่างเห็นภาพ",
+    description: "โมเดลจำลองหน้าต่างเล็ก สำหรับสอนข้อความที่ล้นอย่างเห็นภาพ",
   },
 ];
 

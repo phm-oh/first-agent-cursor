@@ -9,10 +9,10 @@
         location.replace(location.pathname + "/" + location.search + location.hash);
       }
     </script>
-    <title>ContextFlow — Educational LLM Token & Context Simulator</title>
+    <title>ContextFlow — จำลอง Token และหน้าต่างบริบท</title>
     <meta
       name="description"
-      content="เครื่องมือสอนเรื่อง Token, Context Window และต้นทุนของโมเดลภาษา แบบเดินทีละขั้นตอน"
+      content="เครื่องมือสอนเรื่อง Token หน้าต่างบริบท และต้นทุนของโมเดลภาษา แบบเดินทีละขั้นตอน"
     />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M7 16h18M16 7v18' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,7 +52,7 @@
             <div class="min-w-0">
               <div class="flex items-baseline gap-2">
                 <h1 class="text-lg sm:text-xl font-semibold tracking-tight">ContextFlow</h1>
-                <span id="phase-label" class="hidden sm:inline text-[11px] text-zinc-500 font-medium">Phase 5 · Classroom</span>
+                <span id="phase-label" class="hidden sm:inline text-[11px] text-zinc-500 font-medium">ห้องเรียน</span>
               </div>
               <p class="thai text-xs text-zinc-500 truncate">เดินทางไปกับ Token ตั้งแต่ต้นจนจบ</p>
             </div>
@@ -66,7 +66,7 @@
             <button
               id="present-btn"
               class="h-10 w-10 rounded-xl border hairline soft-fill soft-hover transition"
-              title="โหมดพรีเซนต์เต็มจอ"
+              title="โหมดนำเสนอเต็มจอ"
               type="button"
               aria-pressed="false"
             >
@@ -88,7 +88,7 @@
         <div class="max-w-[1440px] mx-auto">
           <div class="flex items-center justify-between gap-3 mb-3">
             <p class="help-kicker thai">เส้นทาง 9 ขั้นตอน</p>
-            <p id="step-progress" class="text-xs text-zinc-500 thai">ยังไม่เริ่มจำลอง — กดเริ่มกระบวนการเมื่อพร้อม</p>
+            <p id="step-progress" class="text-xs text-zinc-500 thai">ยังไม่เริ่ม — กดเริ่มกระบวนการเมื่อพร้อม</p>
           </div>
           <div id="step-rail" class="step-rail flex items-start"></div>
         </div>
@@ -98,13 +98,13 @@
         <aside id="input-aside" class="glass panel p-5 h-fit lg:sticky lg:top-5">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <p class="help-kicker">Input zone</p>
-              <h2 class="thai text-lg font-semibold mt-1">ข้อความเข้าสู่โมเดล</h2>
+              <p class="help-kicker">ข้อความเข้า</p>
+              <h2 class="thai text-lg font-semibold mt-1">สิ่งที่จะส่งเข้าโมเดล</h2>
             </div>
-            <span id="live-badge" class="mono text-[11px] px-2 py-1 rounded-full bg-indigo-500/15 text-indigo-300">0 tok</span>
+            <span id="live-badge" class="mono text-[11px] px-2 py-1 rounded-full bg-indigo-500/15 text-indigo-300">0 Token</span>
           </div>
 
-          <label class="block text-xs text-zinc-400 mb-1.5 thai">System prompt</label>
+          <label class="block text-xs text-zinc-400 mb-1.5 thai">ข้อความระบบ</label>
           <textarea
             id="system-input"
             class="field thai text-sm min-h-[88px]"
@@ -114,7 +114,7 @@
           <div id="turns-wrap" class="mt-4 space-y-3"></div>
 
           <button id="add-turn" type="button" class="mt-3 text-xs text-indigo-300 hover:text-indigo-200 thai">
-            + เพิ่มข้อความ (Multi-turn)
+            + เพิ่มข้อความอีกกล่อง
           </button>
 
           <div class="mt-5">
@@ -122,7 +122,7 @@
             <div id="dropzone" class="dropzone">
               <i data-lucide="paperclip" class="w-5 h-5 mx-auto mb-2 text-zinc-500"></i>
               <p class="thai text-sm">ลากไฟล์มาวาง หรือคลิกเพื่อเลือก</p>
-              <p class="text-[11px] text-zinc-500 mt-1">TXT, DOC, DOCX และรูปภาพ (Vision Token)</p>
+              <p class="text-[11px] text-zinc-500 mt-1">TXT, DOC, DOCX และรูปภาพ (นับเป็น Token ของรูป)</p>
               <input id="file-input" type="file" class="hidden" multiple accept=".txt,.doc,.docx,image/*" />
             </div>
             <div id="file-list" class="mt-3 space-y-2"></div>
@@ -146,18 +146,18 @@
           <button id="start-btn" type="button" class="btn-primary w-full mt-6 h-12 rounded-2xl text-sm font-semibold thai">
             เริ่มกระบวนการ
           </button>
-          <p class="text-[11px] text-zinc-500 mt-3 thai text-center">ลัด: Ctrl / ⌘ + Enter เริ่ม · P พรีเซนต์ · Esc ออก</p>
+          <p class="text-[11px] text-zinc-500 mt-3 thai text-center">ลัด: Ctrl / ⌘ + Enter เริ่ม · P นำเสนอเต็มจอ · Esc ออก</p>
         </aside>
 
         <section id="idle-viz" class="space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="help-kicker">Context window</p>
-              <h2 class="thai text-lg font-semibold mt-1">ภาพรวมพื้นที่ความจำของโมเดล</h2>
+              <p class="help-kicker">หน้าต่างบริบท</p>
+              <h2 class="thai text-lg font-semibold mt-1">พื้นที่ความจำของโมเดลในรอบนี้</h2>
             </div>
             <div class="flex items-center gap-2 p-1 rounded-xl border hairline soft-fill">
               <button id="mode-overview" type="button" class="px-3 h-8 rounded-lg text-xs thai bg-indigo-500 text-white">
-                Overview
+                ภาพรวม
               </button>
               <button id="mode-tokens" type="button" class="px-3 h-8 rounded-lg text-xs thai text-zinc-400 hover:text-white">
                 ดู Token ทั้งหมด
@@ -169,7 +169,7 @@
             <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
               <div>
                 <p id="frame-model" class="text-sm font-medium">Model A</p>
-                <p id="frame-limit" class="mono text-xs text-zinc-500 mt-1">Limit 128,000 tokens</p>
+                <p id="frame-limit" class="mono text-xs text-zinc-500 mt-1">ความจุ 128,000 Token</p>
               </div>
               <div class="text-right">
                 <p id="usage-label" class="mono text-2xl font-semibold tracking-tight">0%</p>
@@ -177,7 +177,7 @@
               </div>
             </div>
 
-            <div class="tank" id="tank" aria-label="Context usage"></div>
+            <div class="tank" id="tank" aria-label="การใช้หน้าต่างบริบท"></div>
             <div id="overflow-track" class="hidden tank-overflow"><div id="overflow-fill" style="width:0%"></div></div>
 
             <div id="legend" class="flex flex-wrap gap-4 mt-4 text-xs text-zinc-400"></div>
@@ -188,10 +188,10 @@
           <div id="detail-panel" class="glass panel p-5 hidden">
             <div class="flex items-center justify-between gap-3 mb-3">
               <div>
-                <p class="help-kicker">Token detail</p>
-                <h3 class="thai font-medium mt-1">ชิ้นส่วนที่โมเดลเห็นทีละ Token</h3>
+                <p class="help-kicker">ดูทีละ Token</p>
+                <h3 class="thai font-medium mt-1">ชิ้นข้อความที่โมเดลเห็นทีละชิ้น</h3>
               </div>
-              <p class="text-xs text-zinc-500 thai">เขียว = อยู่ในลิมิต · แดง = ล้น</p>
+              <p class="text-xs text-zinc-500 thai">เขียว = อยู่ในความจุ · แดง = ล้น</p>
             </div>
             <div id="token-chips" class="flex flex-wrap gap-1.5 max-h-[360px] overflow-auto pr-1"></div>
             <p id="token-chips-note" class="text-xs text-zinc-500 mt-3 thai"></p>
@@ -199,21 +199,21 @@
 
           <div id="teaching-notes" class="grid md:grid-cols-3 gap-3">
             <article class="glass panel p-4">
-              <p class="help-kicker">Teaching note</p>
+              <p class="help-kicker">โน้ตสอน</p>
               <p class="thai text-sm text-zinc-300 mt-2 leading-relaxed">
-                Token ไม่ใช่คำ และไม่ใช่ตัวอักษรเสมอไป ภาษาไทยมักใช้ Token มากกว่าภาษาอังกฤษในความยาวเท่ากัน
+                Token ไม่ใช่คำ และไม่ใช่ตัวอักษรเสมอไป ประโยคภาษาไทยความยาวเท่ากัน มักถูกหั่นเป็นชิ้นมากกว่าภาษาอังกฤษ
               </p>
             </article>
             <article class="glass panel p-4">
-              <p class="help-kicker">Context</p>
+              <p class="help-kicker">หน้าต่างบริบท</p>
               <p class="thai text-sm text-zinc-300 mt-2 leading-relaxed">
-                Context Window คือความจุสูงสุดที่โมเดลอ่านได้ในหนึ่งรอบ หากล้น ข้อมูลส่วนท้ายอาจไม่ถูกใช้
+                หน้าต่างบริบทคือความจุสูงสุดที่โมเดลอ่านได้ในหนึ่งรอบ ถ้าข้อความยาวเกิน ข้อมูลส่วนท้ายจะไม่ถูกอ่าน
               </p>
             </article>
             <article class="glass panel p-4">
-              <p class="help-kicker">Why it matters</p>
+              <p class="help-kicker">ทำไมต้องรู้</p>
               <p class="thai text-sm text-zinc-300 mt-2 leading-relaxed">
-                จำนวน Token กำหนดทั้งความเข้าใจของโมเดล และราคาต่อครั้ง จึงควรเห็นภาพก่อนส่งงานจริง
+                จำนวน Token มีผลทั้งต่อสิ่งที่โมเดลเข้าใจ และราคาต่อครั้ง จึงควรเห็นภาพก่อนส่งงานจริง
               </p>
             </article>
           </div>
@@ -228,9 +228,9 @@
               <i data-lucide="graduation-cap" class="w-4 h-4"></i>
             </div>
             <div>
-              <p class="text-xs text-zinc-500">Educational caption</p>
+              <p class="text-xs text-zinc-500">คำอธิบายประกอบ</p>
               <p id="caption" class="thai text-sm text-zinc-200 mt-0.5">
-                พิมพ์ข้อความด้านซ้าย แล้วสังเกต Context Window ด้านขวาว่า Token ถูกใช้ไปเท่าไร
+                พิมพ์ข้อความด้านซ้าย แล้วดูด้านขวาว่า Token ถูกใช้ไปเท่าไรในหน้าต่างบริบท
               </p>
             </div>
           </div>
@@ -242,7 +242,7 @@
               ย้อนกลับ
             </button>
             <button id="next-btn" type="button" class="btn-primary h-10 px-5 rounded-xl text-xs font-semibold thai" disabled>
-              Next →
+              ขั้นถัดไป →
             </button>
           </div>
         </div>

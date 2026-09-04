@@ -16,15 +16,15 @@ export function mountDataFlow(container) {
       <path id="flow-path" d="M80 110 C 220 40, 340 180, 450 110 S 680 40, 820 110" fill="none" stroke="url(#flow-stroke)" stroke-width="3" stroke-linecap="round"/>
       <g class="flow-node" transform="translate(80 110)">
         <circle r="28" class="flow-ring"/>
-        <text y="5" text-anchor="middle">In</text>
+        <text y="5" text-anchor="middle">เข้า</text>
       </g>
       <g class="flow-node" transform="translate(450 110)">
         <circle r="28" class="flow-ring"/>
-        <text y="5" text-anchor="middle">Tok</text>
+        <text y="5" text-anchor="middle">หั่น</text>
       </g>
       <g class="flow-node" transform="translate(820 110)">
         <circle r="28" class="flow-ring emerald"/>
-        <text y="5" text-anchor="middle">LLM</text>
+        <text y="5" text-anchor="middle">โมเดล</text>
       </g>
       <circle r="6" class="flow-dot" fill="#a5b4fc">
         <animateMotion dur="5.2s" repeatCount="indefinite">
@@ -43,9 +43,9 @@ export function mountDataFlow(container) {
       </circle>
     </svg>
     <div class="flow-labels">
-      <span>Input</span>
-      <span>Special tokens</span>
-      <span>Model</span>
+      <span>ข้อความเข้า</span>
+      <span>จัดลำดับ + เครื่องหมายพิเศษ</span>
+      <span>โมเดล</span>
     </div>
   `;
   return () => {

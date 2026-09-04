@@ -25,13 +25,13 @@ import { mountThinkLesson, mountModelPeek, pickLessonTokens } from "./model-diag
 
 const THINK_DWELL_MS = 11000;
 
-const OVERFLOW_SEED = `ช่วยสรุปบทเรียนเรื่อง Token และ Context Window ให้ยาวพอสำหรับสาธิต Overflow
+const OVERFLOW_SEED = `ช่วยสรุปบทเรียนเรื่อง Token และหน้าต่างบริบท ให้ยาวพอสำหรับสาธิตข้อความที่ล้น
 
 ประเด็นหลัก: ถ้าข้อความยาวเกินลิมิต โมเดลจะมองไม่เห็นส่วนที่ล้น และส่วนนั้นจะไม่ถูกนำไปคิดราคาฝั่งความเข้าใจ
 
 `;
 const OVERFLOW_PAD =
-  "รายละเอียดเพิ่มเติมสำหรับสอน Overflow ของหน้าต่างบริบท — นักเรียนถามซ้ำเรื่อง Token ต้นทุน และส่วนที่ล้น ";
+  "รายละเอียดเพิ่มเติมสำหรับสอนข้อความที่ล้นหน้าต่างบริบท — นักเรียนถามซ้ำเรื่อง Token ต้นทุน และส่วนที่โมเดลอ่านไม่ถึง ";
 
 const state = {
   theme: "dark",
@@ -208,7 +208,7 @@ function renderTurns() {
       (turn, index) => `
       <div>
         <div class="flex items-center justify-between mb-1.5">
-          <label class="text-xs text-zinc-400 thai">${turn.role === "assistant" ? "Assistant" : "User"} ${state.turns.length > 1 ? index + 1 : ""}</label>
+          <label class="text-xs text-zinc-400 thai">${turn.role === "assistant" ? "คำตอบจำลอง" : "ข้อความผู้ใช้"} ${state.turns.length > 1 ? index + 1 : ""}</label>
           ${
             state.turns.length > 1
               ? `<button type="button" data-remove-turn="${turn.id}" class="text-[11px] text-rose-300 hover:text-rose-200">ลบ</button>`
@@ -247,7 +247,7 @@ function renderModels() {
     })
     .join("");
   const model = currentModel();
-  $("model-desc").textContent = `${model.description} · Input ${formatUsd(model.inputPricePerMillion)} / 1M tokens`;
+  $("model-desc").textContent = `${model.description} · ข้อความเข้า ${formatUsd(model.inputPricePerMillion)} / 1 ล้าน Token`;
 }
 
 function renderFiles() {
@@ -260,8 +260,8 @@ function renderFiles() {
     .map((item) => {
       const meta =
         item.kind === "image"
-          ? `${item.width}×${item.height} · ${formatTokens(item.visionTokens)} vision tok`
-          : `${formatTokens(tokenizeText(item.text || "").length)} tok`;
+          ? `${item.width}×${item.height} · ${formatTokens(item.visionTokens)} Token ของรูป`
+          : `${formatTokens(tokenizeText(item.text || "").length)} Token`;
       const thumb = item.previewUrl
         ? `<img class="thumb" src="${item.previewUrl}" alt="">`
         : `<div class="thumb grid place-items-center text-zinc-500"><i data-lucide="${item.kind === "image" ? "image" : "file-text"}" class="w-4 h-4"></i></div>`;
@@ -293,7 +293,7 @@ function renderFiles() {
 }
 
 function renderLiveBadge() {
-  $("live-badge").textContent = `${formatTokens(state.report.counts.input)} tok`;
+  $("live-badge").textContent = `${formatTokens(state.report.counts.input)} Token`;
 }
 
 function renderVisualization() {
@@ -304,11 +304,11 @@ function renderVisualization() {
   frame.classList.toggle("overflowing", overflowing);
 
   $("frame-model").textContent = model.name;
-  $("frame-limit").textContent = `Limit ${formatTokens(model.contextLimit)} tokens`;
+  $("frame-limit").textContent = `ความจุ ${formatTokens(model.contextLimit)} Token`;
   $("usage-label").textContent = `${Math.min(counts.percent, 999).toFixed(counts.percent >= 10 ? 1 : 2)}%`;
   $("usage-label").className = `mono text-2xl font-semibold tracking-tight ${overflowing ? "text-rose-400" : "text-zinc-50"}`;
   $("usage-sub").textContent = overflowing
-    ? `ล้น ${formatTokens(counts.overflow)} tokens นอกหน้าต่าง`
+    ? `ล้น ${formatTokens(counts.overflow)} Token นอกหน้าต่าง`
     : counts.input
       ? `ใช้ไป ${formatTokens(counts.input)} จาก ${formatTokens(counts.limit)}`
       : "ยังไม่มี Token ในหน้าต่าง";
@@ -342,10 +342,10 @@ function renderVisualization() {
   }
 
   $("legend").innerHTML = [
-    ["System", "#6366f1", counts.system],
-    ["User", "#10b981", counts.user],
-    ["Files", "#f59e0b", counts.files],
-    ["Vision", "#f43f5e", counts.images],
+    ["ระบบ", "#6366f1", counts.system],
+    ["ผู้ใช้", "#10b981", counts.user],
+    ["ไฟล์", "#f59e0b", counts.files],
+    ["รูปภาพ", "#f43f5e", counts.images],
   ]
     .map(
       ([label, color, value]) =>
@@ -354,10 +354,10 @@ function renderVisualization() {
     .join("");
 
   $("metrics").innerHTML = [
-    ["Input tokens", formatTokens(counts.input), ""],
-    ["Remaining", formatTokens(counts.remaining), counts.remaining === 0 && counts.input ? "text-amber-300" : ""],
-    ["Overflow", formatTokens(counts.overflow), overflowing ? "text-rose-400" : ""],
-    ["Estimated input cost", formatUsd(counts.input ? state.report.cost : 0), ""],
+    ["Token ข้อความเข้า", formatTokens(counts.input), ""],
+    ["เหลือ", formatTokens(counts.remaining), counts.remaining === 0 && counts.input ? "text-amber-300" : ""],
+    ["ส่วนที่ล้น", formatTokens(counts.overflow), overflowing ? "text-rose-400" : ""],
+    ["ประมาณค่าข้อความเข้า", formatUsd(counts.input ? state.report.cost : 0), ""],
   ]
     .map(
       ([label, value, extra]) => `
@@ -389,7 +389,7 @@ function renderIdleTokenPreview() {
     format: formatTokenPreview,
     escapeHtml,
   });
-  $("token-chips-note").textContent = `ทั้งหมด ${formatTokens(pieces.length)} tokens · เลื่อนดูได้ทั้งหมด`;
+  $("token-chips-note").textContent = `ทั้งหมด ${formatTokens(pieces.length)} Token · เลื่อนดูได้ทั้งหมด`;
 }
 
 function setViewMode(mode) {
@@ -480,7 +480,7 @@ function applyThinkView() {
   const title = document.querySelector("#stage-root h2");
   if (title) title.textContent = `${stage.title} — ${stage.titleTh}`;
   const kicker = $("think-kicker");
-  if (kicker) kicker.textContent = `Step 6 · ชั้น 0${state.thinkIndex + 1} / 04 · ทาย Token ถัดไป`;
+  if (kicker) kicker.textContent = `ขั้นที่ 6 · ชั้น 0${state.thinkIndex + 1} / 04 · ทาย Token ถัดไป`;
   const example = $("think-example");
   if (example) example.textContent = stage.example;
   const inModel = $("think-in-model");
@@ -506,7 +506,7 @@ function applyThinkView() {
 function updateThinkPauseLabel() {
   const btn = $("think-pause");
   if (!btn) return;
-  btn.textContent = state.thinkPlaying ? "หยุดอัตโนมัติ" : "เล่นช้าอัตโนมัติ";
+  btn.textContent = state.thinkPlaying ? "หยุดอัตโนมัติ" : "เล่นอัตโนมัติ";
 }
 
 function bindThinkControls() {
@@ -572,7 +572,7 @@ function renderCurrentStage() {
       });
       const note = $("chip-note");
       if (note) {
-        note.textContent = `เลื่อนดูได้ทั้งหมด ${formatTokens(state.report.allPieces.length)} tokens · เขียวอยู่ในลิมิต · แดงคือล้น`;
+        note.textContent = `เลื่อนดูได้ทั้งหมด ${formatTokens(state.report.allPieces.length)} Token · เขียวอยู่ในความจุ · แดงคือล้น`;
       }
     }
   }
@@ -609,13 +609,13 @@ function updateChrome() {
   $("reset-btn").disabled = !state.started;
   $("next-btn").disabled = !state.started || state.currentStep >= TOTAL_STEPS;
   $("restart-btn").classList.toggle("hidden", !state.started);
-  $("next-btn").textContent = state.currentStep >= TOTAL_STEPS ? "จบแล้ว" : "Next →";
-  $("reset-btn").textContent = state.currentStep <= 1 ? "แก้ไข Input" : "ย้อนกลับ";
+  $("next-btn").textContent = state.currentStep >= TOTAL_STEPS ? "จบแล้ว" : "ขั้นถัดไป →";
+  $("reset-btn").textContent = state.currentStep <= 1 ? "แก้ไขข้อความ" : "ย้อนกลับ";
 
   const step = getStep(state.currentStep);
   if (!state.started) {
-    $("step-progress").textContent = "ยังไม่เริ่มจำลอง — กดเริ่มกระบวนการเมื่อพร้อม";
-    $("phase-label").textContent = "Phase 5 · Classroom";
+    $("step-progress").textContent = "ยังไม่เริ่ม — กดเริ่มกระบวนการเมื่อพร้อม";
+    $("phase-label").textContent = "ห้องเรียน";
   } else {
     $("step-progress").textContent = `ขั้นที่ ${state.currentStep} จาก ${TOTAL_STEPS} · ${step.titleTh}`;
     $("phase-label").textContent = `ขั้น ${state.currentStep} / ${TOTAL_STEPS}`;
@@ -712,8 +712,8 @@ function renderLessons() {
   const items = getLessons();
   select.innerHTML = items
     .map(
-      (lesson) =>
-        `<option value="${escapeHtml(lesson.id)}" ${lesson.id === state.lessonId ? "selected" : ""}>${escapeHtml(lesson.title)}</option>`
+      (lesson, index) =>
+        `<option value="${escapeHtml(lesson.id)}" ${lesson.id === state.lessonId ? "selected" : ""}>${index + 1}. ${escapeHtml(lesson.title)}</option>`
     )
     .join("");
   const current = getLesson(state.lessonId);
@@ -751,8 +751,8 @@ function applyLesson(id) {
   renderLiveBadge();
   setCaption(
     lesson.overflow
-      ? "โหลด Overflow แล้ว — Teaching Mini ถูกเลือกเพื่อให้เห็นส่วนที่ล้นเป็นสีแดง"
-      : `โหลดบท «${lesson.title}» แล้ว สังเกตจำนวน Token แล้วกดเริ่มกระบวนการได้`
+      ? "โหลดบทข้อความยาวจนล้นแล้ว — เลือกโมเดลหน้าต่างเล็กไว้ให้ เพื่อให้เห็นส่วนที่ล้นเป็นสีแดง"
+      : `โหลดบทเรียน «${lesson.title}» แล้ว สังเกตจำนวน Token แล้วกดเริ่มกระบวนการได้`
   );
   refreshIcons();
 }
@@ -761,7 +761,7 @@ function updatePresentButton() {
   const btn = $("present-btn");
   if (!btn) return;
   btn.setAttribute("aria-pressed", state.presenting ? "true" : "false");
-  btn.title = state.presenting ? "ออกจากโหมดพรีเซนต์" : "โหมดพรีเซนต์เต็มจอ";
+  btn.title = state.presenting ? "ออกจากโหมดนำเสนอ" : "โหมดนำเสนอเต็มจอ";
   btn.innerHTML = state.presenting
     ? '<i data-lucide="minimize-2" class="w-4 h-4 mx-auto"></i>'
     : '<i data-lucide="maximize-2" class="w-4 h-4 mx-auto"></i>';
@@ -774,7 +774,7 @@ function setPresenting(on) {
   updatePresentButton();
   if (state.presenting) {
     document.documentElement.requestFullscreen?.().catch(() => {});
-    setCaption("โหมดพรีเซนต์ · ลูกศรซ้ายขวาเดินขั้น · Esc เพื่อออก");
+    setCaption("โหมดนำเสนอ · ลูกศรซ้ายขวาเดินขั้น · Esc เพื่อออก");
   } else if (document.fullscreenElement) {
     document.exitFullscreen?.().catch(() => {});
   }
@@ -919,7 +919,7 @@ function refreshIcons() {
 function updateTokenizerStatus(mode) {
   const ready = mode === "o200k_base";
   $("tokenizer-dot").classList.toggle("ready", ready);
-  $("tokenizer-label").textContent = ready ? "js-tiktoken · o200k_base" : "Approximate tokenizer";
+  $("tokenizer-label").textContent = ready ? "Tokenizer พร้อมแล้ว" : "Tokenizer แบบประมาณค่า";
 }
 
 async function boot() {

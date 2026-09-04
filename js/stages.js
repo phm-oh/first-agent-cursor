@@ -6,68 +6,68 @@ export const THINK_STAGES = [
   {
     id: "embed",
     title: "Embedding",
-    titleTh: "ฝังความหมาย",
-    plain: "รหัสยังไม่มีความหมาย จนกว่าจะถูกปักลงเป็นจุดในพื้นที่ความหมาย",
-    detail: "หลังหั่นข้อความแล้ว โมเดลเห็นแค่เลข ID — Embedding คือตารางเปิดความหมายแล้วบอกตำแหน่ง",
-    caption: "Token สีจากข้อความคุณถูกแปลงเป็นจุด ก่อนที่โมเดลจะทายคำตอบ",
-    example: "ใช้ Token จริงจากกล่องที่คุณพิมพ์ ไม่ใช่ประโยคแมวคนละชุด — สลับลำดับแล้วจุดบนสมุดโน้ตไม่เหมือนเดิม",
-    inModel: "จุดแรกบนเส้นหลัก (residual stream) ก่อน Attention อ่าน",
+    titleTh: "แปลงรหัสเป็นความหมาย",
+    plain: "หลังหั่นข้อความแล้ว โมเดลเห็นแค่เลขรหัส ต้องแปลงเป็นจุดบนแผนที่ความหมายก่อน",
+    detail: "Embedding คือตารางเปิดความหมายของแต่ละรหัส แล้วบอกว่าอยู่ตำแหน่งไหนในประโยค",
+    caption: "Token จากข้อความของคุณถูกแปลงเป็นจุด แล้วโมเดลจึงทายคำตอบได้",
+    example: "ใช้ Token จริงจากกล่องที่คุณพิมพ์ ไม่ใช่ประโยคคนละชุด — สลับลำดับแล้วจุดจะไม่เหมือนเดิม",
+    inModel: "จุดแรกบนเส้นข้อมูลหลัก ก่อนชั้น Attention จะอ่านบริบท",
     bullets: [
-      "หลัง Tokenize เหลือแค่เลข ID — ยังไม่รู้ว่าคำใกล้กันหรือตรงข้าม",
-      "ตาราง Embedding มีแถวเท่าคลังคำ แต่ละแถวเป็นเวกเตอร์หลายร้อยถึงหลายพันมิติ",
+      "หลังหั่นเป็น Token เหลือแค่เลขรหัส — ยังไม่รู้ว่าคำใกล้กันหรือตรงข้าม",
+      "ตาราง Embedding มีแถวเท่าคลังคำ แต่ละแถวเป็นตัวเลขหลายร้อยถึงหลายพันค่า",
       "คำที่ความหมายใกล้กัน มักได้จุดที่อยู่ใกล้กัน",
       "บวกตำแหน่ง เพื่อแยกประโยคที่คำเหมือนกันแต่ลำดับต่างกัน",
-      "ผลลัพธ์คือสมุดโน้ตหนึ่งแถวต่อหนึ่งช่องใน Context Window",
+      "ผลลัพธ์คือเส้นข้อมูลหลัก หนึ่งแถวต่อหนึ่งช่องในหน้าต่างบริบท",
     ],
   },
   {
     id: "attention",
     title: "Attention",
-    titleTh: "ความสนใจ",
-    plain: "Token ท้ายสุดมองย้อนในหน้าต่างคุณ แล้วชั่งว่าจะอ่านใครมาก",
-    detail: "Self-Attention ให้แต่ละ Token อ่าน Token อื่นในหน้าต่างตามน้ำหนัก — นี่คือบริบท",
-    caption: "ชั้นนี้เป็นการอ่าน-เขียนบนเส้นหลัก ไม่ใช่ความจำระยะยาว",
-    example: "ภาพสอน: Token ล่าสุดชี้กลับไป Token แรก — น้ำหนักสีเข้มกว่าไม่ได้มาจากการคำนวณจริง",
-    inModel: "จุด Attention บนเส้นหลัก ทำหลายหัว แล้วเขียนกลับลงสมุดโน้ต",
+    titleTh: "อ่านบริบทในหน้าต่าง",
+    plain: "Token ตัวท้ายมองย้อนไปในหน้าต่าง แล้วตัดสินว่าควรอ่านตัวไหนมาก",
+    detail: "Attention ให้แต่ละ Token อ่าน Token อื่นในหน้าต่างตามน้ำหนัก — นี่คือบริบท",
+    caption: "ชั้นนี้คือการอ่านและเขียนบนเส้นข้อมูลหลัก ไม่ใช่ความจำระยะยาว",
+    example: "ภาพสอน: Token ล่าสุดชี้กลับไป Token แรก — สีเข้มกว่าไม่ได้มาจากการคำนวณจริง",
+    inModel: "จุด Attention บนเส้นข้อมูลหลัก ทำหลายหัว แล้วเขียนกลับลงเส้นเดิม",
     bullets: [
-      "สร้างสามชุดจากเวกเตอร์เดิม: ถาม กุญแจ และค่าที่จะอ่าน",
-      "น้ำหนักในแผนภาพเป็นภาพสอน สมมติให้เห็นว่าอ่านมาก/น้อย ไม่ใช่ค่าจากโมเดล",
+      "สร้างสามชุดจากค่าเดิม: คำถาม กุญแจ และค่าที่จะอ่าน",
+      "น้ำหนักในแผนภาพเป็นภาพสอน ให้เห็นว่าอ่านมากหรือน้อย ไม่ใช่ค่าจากโมเดล",
       "เลยจับสรรพนามกับคำนามได้ โดยไม่ต้องมีกฎไวยากรณ์แยก",
-      "ทำขนานทั้งลำดับในหน้าต่างเดียวกัน",
+      "ทำพร้อมกันทั้งลำดับในหน้าต่างเดียวกัน",
       "หลายหัว = มองหลายมุม เช่น ใครทำ / ทำอะไร / ชี้กลับไปใคร",
     ],
   },
   {
     id: "ffn",
     title: "Feed-forward",
-    titleTh: "ชั้นแปลงความหมาย",
-    plain: "หลังได้อ่านแล้ว คิดต่อทีละช่อง ไม่ดึง Token อื่นมาปนในรอบนี้",
-    detail: "FFN แปลงความหมายของตำแหน่งนั้นหลัง Attention รวมบริบทแล้ว",
-    caption: "บนเส้นหลัก: Attention อ่านของคนอื่น FFN ช่วยสรุปของช่องนี้",
-    example: "ช่อง Token ล่าสุดของคุณตอนนี้มีบริบทจากต้นประโยคแล้ว ชั้นนี้คิดต่อที่ช่องนั้น",
-    inModel: "จุด FFN บนเส้นหลัก คู่กับ Attention ถูกซ้อนหลายสิบชั้น",
+    titleTh: "คิดต่อทีละช่อง",
+    plain: "หลังอ่านบริบทแล้ว ชั้นนี้คิดต่อที่ช่องนั้นช่องเดียว ไม่ดึง Token อื่นมาปน",
+    detail: "ชั้น Feed-forward แปลงความหมายของตำแหน่งนั้น หลัง Attention รวมบริบทแล้ว",
+    caption: "บนเส้นข้อมูลหลัก: Attention อ่านของคนอื่น ชั้นนี้สรุปของช่องนี้",
+    example: "ช่อง Token ล่าสุดของคุณมีบริบทจากต้นประโยคแล้ว ชั้นนี้คิดต่อที่ช่องนั้น",
+    inModel: "จุด Feed-forward บนเส้นข้อมูลหลัก คู่กับ Attention ถูกซ้อนหลายสิบชั้น",
     bullets: [
       "ต่างจาก Attention: ไม่ดึงช่องอื่นมาปนในรอบนี้",
-      "ขยายมิติ แล้วบีบกลับ คล้าย MLP สั้น",
-      "Residual บวกของเดิม เพื่อไม่ให้ของเก่าบนสมุดโน้ตหาย",
-      "คู่ Attention + FFN คือตัวโมเดลส่วนใหญ่",
-      "ซ้อนหลายชั้นแต่ยังทำงานใน Context Window เดิม",
+      "ขยายจำนวนค่า แล้วบีบกลับ เพื่อคิดต่อหลังได้อ่านแล้ว",
+      "บวกของเดิมกลับเข้าเส้นหลัก เพื่อไม่ให้ข้อมูลเก่าหาย",
+      "คู่ Attention กับ Feed-forward คือตัวโมเดลส่วนใหญ่",
+      "ซ้อนหลายชั้นแต่ยังทำงานในหน้าต่างบริบทเดิม",
     ],
   },
   {
     id: "generate",
     title: "Generation",
-    titleTh: "สร้างคำตอบ",
-    plain: "ทายแค่ Token ถัดไป แปะต่อท้าย แล้ววนทั้งเส้นใหม่",
-    detail: "ขาออกเกิดทีละตัว จากคลังคำ แชทที่คุ้นเคยเขียนบนจอแบบนี้",
-    caption: "หัวใจที่ห้องแล็บใช้สอน: โมเดลไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
+    titleTh: "ทาย Token ถัดไป",
+    plain: "ทายได้ทีละตัว ต่อท้ายหน้าต่าง แล้ววนทั้งเส้นใหม่",
+    detail: "คำตอบเกิดทีละตัว จากคลังคำ แชทที่คุ้นเคยเขียนบนจอแบบนี้",
+    caption: "หัวใจที่ใช้สอน: โมเดลไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
     example: "แถบเปอร์เซ็นต์เป็นภาพสอน สมมติบนคำตอบจำลองของคุณ ไม่ใช่คะแนนจริงของโมเดล",
-    inModel: "จุด LM Head ท้ายเส้นหลัก แล้ววนกลับไป Embed",
+    inModel: "จุดท้ายเส้นข้อมูลหลัก แล้ววนกลับไปแปลงรหัสเป็นจุดอีกครั้ง",
     bullets: [
-      "ช่องล่าสุดบนสมุดโน้ตผ่าน LM Head เป็นคะแนนของทั้งคลัง",
-      "แถบเปอร์เซ็นต์ในหน้านี้เป็นภาพสอน สมมติ ไม่ใช่ softmax จริง",
-      "เลือกตัวสูงสุด หรือสุ่มตามอุณหภูมิ ได้แค่ 1 Token",
-      "ต่อท้ายหน้าต่าง แล้ววน Embed → Attention → FFN",
+      "ช่องล่าสุดบนเส้นข้อมูลหลักถูกแปลงเป็นคะแนนของทั้งคลังคำ",
+      "แถบเปอร์เซ็นต์ในหน้านี้เป็นภาพสอน ไม่ใช่คะแนนจริงของโมเดล",
+      "เลือกตัวที่สูงสุด หรือสุ่มเล็กน้อย ได้แค่ 1 Token",
+      "ต่อท้ายหน้าต่าง แล้ววน Embedding → Attention → Feed-forward",
       "หยุดเมื่อจบหรือครบจำนวน — นี่คือที่มาของคำตอบทีละคำ",
     ],
   },
@@ -113,33 +113,33 @@ function renderInputStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 1</p>
-      <h2 class="thai text-xl font-semibold mt-1">รับ Input</h2>
+      <p class="help-kicker">ขั้นที่ 1</p>
+      <h2 class="thai text-xl font-semibold mt-1">รับข้อความเข้า</h2>
       <p class="thai text-sm text-zinc-400 mt-2">นี่คือทุกอย่างที่กำลังจะถูกส่งเข้าโมเดล ก่อนหั่นเป็น Token</p>
     </div>
     <div class="grid md:grid-cols-2 gap-3 mt-5">
       <article class="glass panel p-4">
-        <p class="help-kicker">System</p>
+        <p class="help-kicker">ข้อความระบบ</p>
         <p class="thai text-sm mt-2 leading-relaxed whitespace-pre-wrap">${preview(systemPrompt)}</p>
-        <p class="mono text-xs text-indigo-300 mt-3">${formatTokens(report.counts.system)} tokens</p>
+        <p class="mono text-xs text-indigo-300 mt-3">${formatTokens(report.counts.system)} Token</p>
       </article>
       <article class="glass panel p-4">
-        <p class="help-kicker">User / turns</p>
+        <p class="help-kicker">ข้อความผู้ใช้</p>
         <p class="thai text-sm mt-2 leading-relaxed whitespace-pre-wrap">${preview(turns.map((t) => t.content).join("\n"))}</p>
-        <p class="mono text-xs text-emerald-300 mt-3">${formatTokens(report.counts.user)} tokens · ${turns.length} ข้อความ</p>
+        <p class="mono text-xs text-emerald-300 mt-3">${formatTokens(report.counts.user)} Token · ${turns.length} ข้อความ</p>
       </article>
       <article class="glass panel p-4">
-        <p class="help-kicker">Files</p>
+        <p class="help-kicker">ไฟล์</p>
         <p class="thai text-sm mt-2">${files.length ? files.map((f) => escapeHtml(f.name)).join(", ") : "ไม่มีไฟล์"}</p>
-        <p class="mono text-xs text-amber-300 mt-3">${formatTokens(report.counts.files)} tokens</p>
+        <p class="mono text-xs text-amber-300 mt-3">${formatTokens(report.counts.files)} Token</p>
       </article>
       <article class="glass panel p-4">
-        <p class="help-kicker">Images</p>
+        <p class="help-kicker">รูปภาพ</p>
         <p class="thai text-sm mt-2">${images.length ? images.map((f) => `${escapeHtml(f.name)} (${f.width}×${f.height})`).join(", ") : "ไม่มีรูป"}</p>
-        <p class="mono text-xs text-rose-300 mt-3">${formatTokens(report.counts.images)} vision tokens</p>
+        <p class="mono text-xs text-rose-300 mt-3">${formatTokens(report.counts.images)} Token ของรูป</p>
       </article>
     </div>
-    <p class="thai text-sm text-zinc-400 mt-5">รวมขาเข้า ${formatTokens(report.counts.input)} tokens — กด Next เพื่อดูว่าข้อความถูกหั่นอย่างไร</p>
+    <p class="thai text-sm text-zinc-400 mt-5">รวมข้อความเข้า ${formatTokens(report.counts.input)} Token — กดขั้นถัดไปเพื่อดูว่าข้อความถูกหั่นอย่างไร</p>
   `;
 }
 
@@ -148,19 +148,19 @@ function renderTokenStage(ctx) {
   return `
     <div class="stage-head flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p class="help-kicker">Step 2</p>
-        <h2 class="thai text-xl font-semibold mt-1">Tokenization</h2>
-        <p class="thai text-sm text-zinc-400 mt-2">Token คือหน่วยที่โมเดลอ่านได้ จีน/ไทยมักถูกหั่นถี่กว่าภาษาอังกฤษ</p>
+        <p class="help-kicker">ขั้นที่ 2</p>
+        <h2 class="thai text-xl font-semibold mt-1">หั่นเป็น Token</h2>
+        <p class="thai text-sm text-zinc-400 mt-2">Token คือหน่วยที่โมเดลอ่านได้ ภาษาไทยมักถูกหั่นละเอียดกว่าภาษาอังกฤษ</p>
       </div>
-      <p class="mono text-sm text-zinc-400">${formatTokens(report.allPieces.length)} pieces</p>
+      <p class="mono text-sm text-zinc-400">${formatTokens(report.allPieces.length)} ชิ้น</p>
     </div>
     <div class="flex flex-wrap gap-3 mt-4 text-xs text-zinc-400">
-      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#6366f1"></span>System</span>
-      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#10b981"></span>User</span>
-      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#f59e0b"></span>Files</span>
-      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#f43f5e"></span>Vision / Overflow</span>
+      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#6366f1"></span>ระบบ</span>
+      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#10b981"></span>ผู้ใช้</span>
+      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#f59e0b"></span>ไฟล์</span>
+      <span class="inline-flex items-center gap-2"><span class="legend-dot" style="background:#f43f5e"></span>รูป / ส่วนที่ล้น</span>
     </div>
-    <div id="chip-scroll" class="chip-virtual glass panel mt-4" aria-label="Token list"></div>
+    <div id="chip-scroll" class="chip-virtual glass panel mt-4" aria-label="รายการ Token"></div>
     <p id="chip-note" class="text-xs text-zinc-500 mt-3 thai"></p>
   `;
 }
@@ -188,29 +188,29 @@ function renderContextStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 3</p>
-      <h2 class="thai text-xl font-semibold mt-1">จัดเข้า Context Window</h2>
+      <p class="help-kicker">ขั้นที่ 3</p>
+      <h2 class="thai text-xl font-semibold mt-1">จัดเข้าหน้าต่างบริบท</h2>
       <p class="thai text-sm text-zinc-400 mt-2">หน้าต่างนี้คือความจำต่อรอบ สีแดงคือส่วนที่โมเดลอ่านไม่ถึง</p>
     </div>
     <div class="context-frame glass mt-5 ${overflowing ? "overflowing" : ""}">
       <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
         <div>
           <p class="text-sm font-medium">${escape(ctx, model.name)}</p>
-          <p class="mono text-xs text-zinc-500 mt-1">Limit ${formatTokens(model.contextLimit)} tokens</p>
+          <p class="mono text-xs text-zinc-500 mt-1">ความจุ ${formatTokens(model.contextLimit)} Token</p>
         </div>
         <div class="text-right">
           <p class="mono text-2xl font-semibold tracking-tight ${overflowing ? "text-rose-400" : ""}">${counts.percent.toFixed(counts.percent >= 10 ? 1 : 2)}%</p>
-          <p class="thai text-xs text-zinc-500">${overflowing ? `ล้น ${formatTokens(counts.overflow)} tokens` : `ใช้ไป ${formatTokens(counts.input)} จาก ${formatTokens(counts.limit)}`}</p>
+          <p class="thai text-xs text-zinc-500">${overflowing ? `ล้น ${formatTokens(counts.overflow)} Token` : `ใช้ไป ${formatTokens(counts.input)} จาก ${formatTokens(counts.limit)}`}</p>
         </div>
       </div>
       <div class="tank">${segs}</div>
       ${overflowing ? `<div class="tank-overflow"><div style="width:${Math.max(8, overflowPct)}%"></div></div>` : ""}
     </div>
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mt-4">
-      ${metric("Used", formatTokens(Math.min(counts.input, counts.limit)))}
-      ${metric("Remaining", formatTokens(counts.remaining), counts.remaining === 0 ? "text-amber-300" : "")}
-      ${metric("Overflow", formatTokens(counts.overflow), overflowing ? "text-rose-400" : "")}
-      ${metric("Fit?", overflowing ? "ไม่ครบ" : "ครบ", overflowing ? "text-rose-400" : "text-emerald-300")}
+      ${metric("ใช้ไป", formatTokens(Math.min(counts.input, counts.limit)))}
+      ${metric("เหลือ", formatTokens(counts.remaining), counts.remaining === 0 ? "text-amber-300" : "")}
+      ${metric("ส่วนที่ล้น", formatTokens(counts.overflow), overflowing ? "text-rose-400" : "")}
+      ${metric("พอดีหรือไม่", overflowing ? "ไม่ครบ" : "ครบ", overflowing ? "text-rose-400" : "text-emerald-300")}
     </div>
   `;
 }
@@ -255,20 +255,20 @@ function renderCostStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 4</p>
+      <p class="help-kicker">ขั้นที่ 4</p>
       <h2 class="thai text-xl font-semibold mt-1">เทียบต้นทุนหลายโมเดล</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ใช้ Token ขาเข้า ${formatTokens(input)} และขาออกจำลอง ${formatTokens(output)} คูณราคาต่อล้านของแต่ละรุ่น</p>
+      <p class="thai text-sm text-zinc-400 mt-2">ใช้ Token ข้อความเข้า ${formatTokens(input)} และคำตอบจำลอง ${formatTokens(output)} คูณราคาต่อล้านของแต่ละรุ่น</p>
     </div>
     <div class="glass panel p-4 mt-5 overflow-x-auto">
       <table class="cost-table">
         <thead>
           <tr>
             <th>โมเดล</th>
-            <th>Context</th>
-            <th>In / 1M</th>
-            <th>Out / 1M</th>
-            <th>ค่า Input</th>
-            <th>ค่า Output</th>
+            <th>ความจุ</th>
+            <th>เข้า / 1 ล้าน</th>
+            <th>ออก / 1 ล้าน</th>
+            <th>ค่าข้อความเข้า</th>
+            <th>ค่าคำตอบ</th>
             <th>รวมรอบนี้</th>
             <th>หน้าต่าง</th>
           </tr>
@@ -279,18 +279,18 @@ function renderCostStage(ctx) {
     <article class="glass panel p-4 sm:p-5 mt-4">
       <p class="help-kicker">สูตรคิดราคาของรุ่นที่เลือก</p>
       <p class="thai text-sm text-zinc-300 mt-3 leading-relaxed">
-        Input = ${formatTokens(input)} ÷ 1,000,000 × ${formatUsd(selected.item.inputPricePerMillion)}
+        ข้อความเข้า = ${formatTokens(input)} ÷ 1,000,000 × ${formatUsd(selected.item.inputPricePerMillion)}
         = <span class="mono text-indigo-300">${formatUsd(selected.inCost)}</span>
       </p>
       <p class="thai text-sm text-zinc-300 mt-2 leading-relaxed">
-        Output = ${formatTokens(output)} ÷ 1,000,000 × ${formatUsd(selected.item.outputPricePerMillion)}
+        คำตอบ = ${formatTokens(output)} ÷ 1,000,000 × ${formatUsd(selected.item.outputPricePerMillion)}
         = <span class="mono text-emerald-300">${formatUsd(selected.outCost)}</span>
       </p>
       <p class="thai text-sm mt-3">รวมรอบนี้บน ${escape(ctx, selected.item.name)} =
         <span class="mono">${formatUsd(selected.total)}</span>
       </p>
     </article>
-    <p class="thai text-sm text-zinc-400 mt-4">เรียงจากรวมถูกสุดขึ้นก่อน · Output ยังเป็นคำตอบจำลอง ไม่ใช่ราคาบิลจริง · ส่วนที่ล้นคิดราคาไม่ได้เพราะโมเดลไม่อ่าน</p>
+    <p class="thai text-sm text-zinc-400 mt-4">เรียงจากรวมถูกสุดขึ้นก่อน · คำตอบยังเป็นข้อความจำลอง ไม่ใช่ราคาบิลจริง · ส่วนที่ล้นคิดราคาไม่ได้เพราะโมเดลไม่อ่าน</p>
   `;
 }
 
@@ -304,16 +304,16 @@ function renderDispatchStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 5</p>
-      <h2 class="thai text-xl font-semibold mt-1">เตรียมส่งเข้า LLM</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ดูเส้นทางข้อมูล: ข้อความถูกจัดลำดับ ใส่ Special Tokens แล้วไหลเข้าโมเดล</p>
+      <p class="help-kicker">ขั้นที่ 5</p>
+      <h2 class="thai text-xl font-semibold mt-1">จัดลำดับแล้วส่งเข้าโมเดล</h2>
+      <p class="thai text-sm text-zinc-400 mt-2">ดูเส้นทางข้อมูล: ข้อความถูกจัดลำดับ ใส่เครื่องหมายพิเศษ แล้วไหลเข้าโมเดล</p>
     </div>
     <div id="data-flow" class="glass panel p-4 mt-5 overflow-hidden"></div>
     <div class="glass panel p-5 mt-4">
-      <p class="help-kicker">Special tokens ที่ถูกเพิ่ม</p>
+      <p class="help-kicker">เครื่องหมายพิเศษที่ถูกเพิ่ม</p>
       <div class="flex flex-wrap gap-1.5 mt-3">${chips}</div>
-      <p class="thai text-sm text-zinc-400 mt-4">โครงที่ใช้สอน: start → system → user → end ตามด้วยเนื้อหา ${formatTokens(report.counts.input)} tokens</p>
-      <p class="mono text-xs text-indigo-300 mt-2">+${extras} special tokens (เชิงแนวคิด)</p>
+      <p class="thai text-sm text-zinc-400 mt-4">โครงที่ใช้สอน: เริ่ม → ระบบ → ผู้ใช้ → จบ ตามด้วยเนื้อหา ${formatTokens(report.counts.input)} Token</p>
+      <p class="mono text-xs text-indigo-300 mt-2">+${extras} เครื่องหมายพิเศษ (เชิงแนวคิด)</p>
     </div>
     <div id="model-peek" class="mt-4"></div>
   `;
@@ -337,7 +337,7 @@ function renderThinkStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p id="think-kicker" class="help-kicker">Step 6 · หนึ่งเรื่องเดียว · ทาย Token ถัดไป</p>
+      <p id="think-kicker" class="help-kicker">ขั้นที่ 6 · หนึ่งเรื่องเดียว · ทาย Token ถัดไป</p>
       <h2 class="thai text-xl font-semibold mt-1">${escape(ctx, current.title)} — ${escape(ctx, current.titleTh)}</h2>
       <p id="think-status" class="thai text-sm text-zinc-400 mt-2">${escape(ctx, current.plain)}</p>
     </div>
@@ -346,7 +346,7 @@ function renderThinkStage(ctx) {
       <p class="text-[11px] text-zinc-500 thai">11 วินาทีต่อชั้น · กดหยุดถ้าจะยืนอธิบาย</p>
       <div class="think-depth" role="tablist" aria-label="ระดับคำอธิบาย">
         <button type="button" id="think-depth-simple" class="think-depth-btn ${teacher ? "" : "active"}" data-depth="simple">นักเรียน</button>
-        <button type="button" id="think-depth-teacher" class="think-depth-btn ${teacher ? "active" : ""}" data-depth="teacher">ครู / สูตร</button>
+        <button type="button" id="think-depth-teacher" class="think-depth-btn ${teacher ? "active" : ""}" data-depth="teacher">ครู</button>
       </div>
     </div>
     <div class="think-card-row mt-4">${cards}</div>
@@ -361,7 +361,7 @@ function renderThinkStage(ctx) {
         <article class="glass panel p-4 sm:p-5">
           <p class="help-kicker">จากข้อความนี้</p>
           <p id="think-example" class="thai text-sm text-zinc-300 mt-3 leading-relaxed">${escape(ctx, current.example)}</p>
-          <p class="help-kicker mt-4">อยู่ตรงไหนบนเส้นหลัก</p>
+          <p class="help-kicker mt-4">อยู่ตรงไหนบนเส้นข้อมูลหลัก</p>
           <p id="think-in-model" class="thai text-sm text-zinc-300 mt-2 leading-relaxed">${escape(ctx, current.inModel)}</p>
         </article>
       </div>
@@ -378,9 +378,9 @@ function renderOutputStage(ctx) {
   const { formatTokens, outputTokens } = ctx;
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 7</p>
-      <h2 class="thai text-xl font-semibold mt-1">สร้างผลลัพธ์จำลอง</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">คำตอบถูกประกอบทีละ Token จากเทมเพลตการสอน ไม่ได้เรียก API จริง</p>
+      <p class="help-kicker">ขั้นที่ 7</p>
+      <h2 class="thai text-xl font-semibold mt-1">สร้างคำตอบจำลอง</h2>
+      <p class="thai text-sm text-zinc-400 mt-2">คำตอบถูกประกอบทีละ Token จากชุดข้อความสอน ไม่ได้เรียกบริการจริง</p>
     </div>
     <article class="glass panel p-5 mt-5">
       <div class="flex items-center gap-2">
@@ -389,7 +389,7 @@ function renderOutputStage(ctx) {
       </div>
       <div id="typed-output" class="thai text-sm leading-relaxed whitespace-pre-wrap mt-3 min-h-[6rem]"></div>
     </article>
-    <p class="mono text-xs text-zinc-500 mt-3">ขาออกประมาณ ${formatTokens(outputTokens.length)} tokens</p>
+    <p class="mono text-xs text-zinc-500 mt-3">คำตอบประมาณ ${formatTokens(outputTokens.length)} Token</p>
   `;
 }
 
@@ -399,22 +399,22 @@ function renderReturnStage(ctx) {
   const outputCost = calcCostUsd(outputTokens.length, model.outputPricePerMillion);
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 8</p>
-      <h2 class="thai text-xl font-semibold mt-1">Tokenize ขากลับ + รวมราคา</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ขาออกถูกหั่นเป็น Token เหมือนขาเข้า แล้วคูณราคาฝั่ง Output</p>
+      <p class="help-kicker">ขั้นที่ 8</p>
+      <h2 class="thai text-xl font-semibold mt-1">นับ Token ของคำตอบ แล้วรวมราคา</h2>
+      <p class="thai text-sm text-zinc-400 mt-2">คำตอบถูกหั่นเป็น Token เหมือนข้อความเข้า แล้วคูณราคาฝั่งคำตอบ</p>
     </div>
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mt-5">
-      ${metric("Input tokens", formatTokens(report.counts.input))}
-      ${metric("Output tokens", formatTokens(outputTokens.length))}
-      ${metric("Input cost", formatUsd(inputCost))}
-      ${metric("Output cost", formatUsd(outputCost))}
+      ${metric("Token ข้อความเข้า", formatTokens(report.counts.input))}
+      ${metric("Token ของคำตอบ", formatTokens(outputTokens.length))}
+      ${metric("ค่าข้อความเข้า", formatUsd(inputCost))}
+      ${metric("ค่าคำตอบ", formatUsd(outputCost))}
     </div>
     <div class="glass panel p-5 mt-4">
-      <p class="help-kicker">Total</p>
+      <p class="help-kicker">รวมทั้งรอบ</p>
       <p id="total-cost" class="mono text-3xl font-semibold mt-2">${formatUsd(inputCost + outputCost)}</p>
-      <p class="thai text-sm text-zinc-400 mt-2">รวมขามา-ขากลับของรอบนี้ บน ${escape(ctx, model.name)}</p>
+      <p class="thai text-sm text-zinc-400 mt-2">รวมข้อความเข้าและคำตอบของรอบนี้ บน ${escape(ctx, model.name)}</p>
     </div>
-    <div id="output-chip-scroll" class="chip-virtual glass panel mt-4" aria-label="Output tokens"></div>
+    <div id="output-chip-scroll" class="chip-virtual glass panel mt-4" aria-label="Token ของคำตอบ"></div>
   `;
 }
 
@@ -425,7 +425,7 @@ function renderChatStage(ctx) {
     calcCostUsd(outputTokens.length, model.outputPricePerMillion);
   return `
     <div class="stage-head">
-      <p class="help-kicker">Step 9</p>
+      <p class="help-kicker">ขั้นที่ 9</p>
       <h2 class="thai text-xl font-semibold mt-1">กลับสู่หน้าต่างแชท</h2>
       <p class="thai text-sm text-zinc-400 mt-2">นี่คือสิ่งที่ผู้ใช้เห็น — Token กับราคาถูกสรุปไว้ใต้บทสนทนา</p>
     </div>
@@ -435,7 +435,7 @@ function renderChatStage(ctx) {
       <div class="chat-bubble assistant thai text-sm whitespace-pre-wrap chat-in" style="animation-delay:.28s">${escapeHtml(outputText || "")}</div>
     </div>
     <div class="chat-meter glass panel p-4 mt-4 flex flex-wrap gap-3 justify-between items-center">
-      <p class="thai text-sm">ขาเข้า ${formatTokens(report.counts.input)} · ขาออก ${formatTokens(outputTokens.length)}</p>
+      <p class="thai text-sm">ข้อความเข้า ${formatTokens(report.counts.input)} · คำตอบ ${formatTokens(outputTokens.length)}</p>
       <p class="mono text-sm text-indigo-300">รวม ${formatUsd(total)}</p>
     </div>
   `;
