@@ -642,11 +642,49 @@ html.light .soft-hover:hover {
   }
 }
 
+.think-lab {
+  display: grid;
+  gap: 12px;
+}
+
+.think-disclaimer {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.think-highway .model-svg {
+  max-height: 140px;
+}
+
+.think-depth {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.think-depth-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: Sarabun, Inter, sans-serif;
+  cursor: pointer;
+}
+
+.think-depth-btn.active {
+  background: var(--indigo-soft);
+  color: var(--text);
+}
+
 .think-layout {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) 1fr;
   gap: 12px;
-  align-items: stretch;
 }
 
 .model-svg {
@@ -866,8 +904,8 @@ html.light .soft-hover:hover {
 }
 
 @media (max-width: 900px) {
-  .think-layout {
-    grid-template-columns: 1fr;
+  .highway-svg {
+    min-height: 112px;
   }
 }
 

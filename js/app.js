@@ -20,7 +20,7 @@ import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js";
 import { renderStage, THINK_STAGES } from "./stages.js";
 import { mountVirtualChips } from "./virtual-chips.js";
 import { mountDataFlow, typeText } from "./animation.js";
-import { mountThinkLesson, mountModelPeek } from "./model-diagrams.js";
+import { mountThinkLesson, mountModelPeek, pickLessonTokens } from "./model-diagrams.js";
 
 const THINK_DWELL_MS = 11000;
 
@@ -53,6 +53,7 @@ const state = {
   outputTokens: [],
   thinkIndex: 0,
   thinkPlaying: true,
+  thinkDepth: "simple",
 };
 
 let debounceTimer = null;
@@ -424,6 +425,7 @@ function stageContext() {
     outputText: state.outputText,
     outputTokens: state.outputTokens,
     thinkIndex: state.thinkIndex,
+    thinkDepth: state.thinkDepth,
     formatTokens,
     formatUsd,
     calcCostUsd,
@@ -469,16 +471,20 @@ function restartThinkDwell() {
   }
 }
 
+function currentLesson() {
+  return pickLessonTokens(state.report.allPieces, state.outputTokens, formatTokenPreview);
+}
+
 function applyThinkView() {
   const stage = THINK_STAGES[state.thinkIndex];
   if (!stage) return;
-  mountThinkLesson($("think-flow"), state.thinkIndex);
+  mountThinkLesson($("think-flow"), state.thinkIndex, currentLesson());
   const status = $("think-status");
-  if (status) status.textContent = stage.detail;
+  if (status) status.textContent = stage.plain;
   const title = document.querySelector("#stage-root h2");
   if (title) title.textContent = `${stage.title} — ${stage.titleTh}`;
   const kicker = $("think-kicker");
-  if (kicker) kicker.textContent = `Step 6 · ชั้นในโมเดล · 0${state.thinkIndex + 1} / 04`;
+  if (kicker) kicker.textContent = `Step 6 · ชั้น 0${state.thinkIndex + 1} / 04 · ทาย Token ถัดไป`;
   const example = $("think-example");
   if (example) example.textContent = stage.example;
   const inModel = $("think-in-model");
@@ -492,6 +498,10 @@ function applyThinkView() {
       .map((item) => `<li class="thai text-sm text-zinc-300 leading-relaxed">${escapeHtml(item)}</li>`)
       .join("");
   }
+  const details = $("think-details");
+  if (details) details.classList.toggle("hidden", state.thinkDepth !== "teacher");
+  $("think-depth-simple")?.classList.toggle("active", state.thinkDepth === "simple");
+  $("think-depth-teacher")?.classList.toggle("active", state.thinkDepth === "teacher");
   setCaption(stage.caption);
   updateThinkPauseLabel();
   restartThinkDwell();
@@ -531,6 +541,14 @@ function bindThinkControls() {
     updateThinkPauseLabel();
     restartThinkDwell();
   });
+  document.querySelectorAll("[data-depth]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.thinkDepth = btn.dataset.depth === "teacher" ? "teacher" : "simple";
+      $("think-details")?.classList.toggle("hidden", state.thinkDepth !== "teacher");
+      $("think-depth-simple")?.classList.toggle("active", state.thinkDepth === "simple");
+      $("think-depth-teacher")?.classList.toggle("active", state.thinkDepth === "teacher");
+    });
+  });
 }
 
 function clearMotion() {
@@ -567,7 +585,7 @@ function renderCurrentStage() {
     mountModelPeek($("model-peek"));
   }
   if (state.currentStep === 6) {
-    mountThinkLesson($("think-flow"), state.thinkIndex);
+    mountThinkLesson($("think-flow"), state.thinkIndex, currentLesson());
     bindThinkControls();
     updateThinkPauseLabel();
     restartThinkDwell();
