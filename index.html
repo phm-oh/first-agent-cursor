@@ -64,6 +64,15 @@
               <span id="tokenizer-label">กำลังเตรียม Tokenizer…</span>
             </div>
             <button
+              id="present-btn"
+              class="h-10 w-10 rounded-xl border hairline soft-fill soft-hover transition"
+              title="โหมดพรีเซนต์เต็มจอ"
+              type="button"
+              aria-pressed="false"
+            >
+              <i data-lucide="maximize-2" class="w-4 h-4 mx-auto"></i>
+            </button>
+            <button
               id="theme-toggle"
               class="h-10 w-10 rounded-xl border hairline soft-fill soft-hover transition"
               title="สลับโหมดสว่าง/มืด"
@@ -120,6 +129,15 @@
           </div>
 
           <div class="mt-5">
+            <label class="block text-xs text-zinc-400 mb-1.5 thai" for="lesson-select">บทเรียนห้องเรียน</label>
+            <select id="lesson-select" class="field text-sm"></select>
+            <p id="lesson-hint" class="thai text-xs text-zinc-500 mt-2">เลือกบทแล้วกดโหลด — ข้อความจะถูกใส่ให้พร้อมสอน</p>
+            <button id="lesson-load" type="button" class="mt-3 w-full h-10 rounded-xl border hairline soft-fill soft-hover text-xs thai">
+              โหลดบทเรียนนี้
+            </button>
+          </div>
+
+          <div class="mt-5">
             <label class="block text-xs text-zinc-400 mb-1.5 thai">โมเดลสำหรับจำลอง</label>
             <select id="model-select" class="field text-sm"></select>
             <p id="model-desc" class="thai text-xs text-zinc-500 mt-2"></p>
@@ -128,15 +146,7 @@
           <button id="start-btn" type="button" class="btn-primary w-full mt-6 h-12 rounded-2xl text-sm font-semibold thai">
             เริ่มกระบวนการ
           </button>
-          <div class="mt-3 grid grid-cols-2 gap-2">
-            <button id="sample-btn" type="button" class="h-10 rounded-xl border hairline soft-fill soft-hover text-xs thai">
-              โหลดตัวอย่าง
-            </button>
-            <button id="overflow-btn" type="button" class="h-10 rounded-xl border hairline soft-fill soft-hover text-xs thai">
-              ตัวอย่าง Overflow
-            </button>
-          </div>
-          <p class="text-[11px] text-zinc-500 mt-3 thai text-center">ลัด: Ctrl / ⌘ + Enter เพื่อเริ่ม</p>
+          <p class="text-[11px] text-zinc-500 mt-3 thai text-center">ลัด: Ctrl / ⌘ + Enter เริ่ม · P พรีเซนต์ · Esc ออก</p>
         </aside>
 
         <section id="idle-viz" class="space-y-5">
