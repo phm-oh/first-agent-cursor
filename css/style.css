@@ -659,6 +659,12 @@ html.light .soft-hover:hover {
   font-family: Sarabun, Inter, sans-serif;
 }
 
+.think-card-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
 .think-card {
   width: 100%;
   text-align: left;
@@ -866,6 +872,18 @@ html.light .soft-hover:hover {
 }
 
 @media (max-width: 640px) {
+  .think-card {
+    padding: 8px 6px;
+  }
+
+  .think-card h3 {
+    font-size: 11px;
+  }
+
+  .think-card .thai {
+    display: none;
+  }
+
   .step-item {
     min-width: 72px;
   }

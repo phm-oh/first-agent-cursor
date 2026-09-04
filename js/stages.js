@@ -338,6 +338,7 @@ function renderThinkStage(ctx) {
     </div>
     <div id="think-dwell" class="think-dwell playing mt-4" style="--think-ms: 11s"><span></span></div>
     <p class="text-[11px] text-zinc-500 thai mt-2">แถบนี้เต็มใน 11 วินาทีต่อชั้น — กดหยุดอัตโนมัติถ้าจะอธิบายเอง</p>
+    <div class="think-card-row mt-4">${cards}</div>
     <div id="think-flow" class="mt-4"></div>
     <div class="grid md:grid-cols-2 gap-3 mt-4">
       <article class="glass panel p-4 sm:p-5">
@@ -351,7 +352,6 @@ function renderThinkStage(ctx) {
         <p id="think-in-model" class="thai text-sm text-zinc-300 mt-2 leading-relaxed">${escape(ctx, current.inModel)}</p>
       </article>
     </div>
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-2 mt-4">${cards}</div>
     <div class="flex flex-wrap gap-2 mt-4">
       <button type="button" id="think-prev" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">ย้อนขั้นย่อย</button>
       <button type="button" id="think-pause" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">หยุดอัตโนมัติ</button>
