@@ -85,7 +85,7 @@ html.light {
   stroke: #a5b4fc;
   transform-box: fill-box;
   transform-origin: center;
-  animation: pulse 1.8s ease-out infinite;
+  animation: pulse 4.8s ease-out infinite;
 }
 
 @keyframes pulse {
@@ -225,6 +225,11 @@ body.is-simulating .app-main {
 
 body.is-simulating #input-aside {
   display: none;
+}
+
+#stage-root {
+  min-width: 0;
+  padding-bottom: 8px;
 }
 
 .step-dot {
@@ -637,11 +642,32 @@ html.light .soft-hover:hover {
   }
 }
 
+.think-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.model-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.model-svg text {
+  font-family: Sarabun, Inter, sans-serif;
+}
+
 .think-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 16px;
-  opacity: 0.42;
+  padding: 14px;
+  opacity: 0.55;
   background: rgba(255, 255, 255, 0.02);
   transition: 0.3s ease;
 }
@@ -650,6 +676,143 @@ html.light .soft-hover:hover {
   opacity: 1;
   border-color: var(--indigo);
   box-shadow: 0 0 0 4px var(--indigo-soft);
+}
+
+.think-dwell {
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(129, 140, 248, 0.18);
+  overflow: hidden;
+}
+
+.think-dwell > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6366f1, #22d3ee);
+}
+
+.think-dwell.playing > span {
+  animation: thinkDwell var(--think-ms, 11s) linear forwards;
+}
+
+@keyframes thinkDwell {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.d-fade {
+  opacity: 0;
+  animation: dFade 1.6s ease forwards;
+}
+
+.d-d1 {
+  animation-delay: 0.9s;
+}
+.d-d2 {
+  animation-delay: 1.8s;
+}
+.d-d3 {
+  animation-delay: 2.7s;
+}
+.d-d4 {
+  animation-delay: 3.6s;
+}
+
+@keyframes dFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.d-trace {
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  animation: dTrace 3.6s ease forwards;
+}
+
+@keyframes dTrace {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.d-draw {
+  stroke-dasharray: 8 6;
+  animation: dDash 7s linear infinite;
+}
+
+@keyframes dDash {
+  to {
+    stroke-dashoffset: -56;
+  }
+}
+
+.d-grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: dGrow 3.4s ease 1.5s forwards;
+}
+
+@keyframes dGrow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.d-glow {
+  animation: dGlow 3.2s ease-in-out infinite;
+}
+
+@keyframes dGlow {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.stack-on {
+  filter: drop-shadow(0 0 10px rgba(165, 180, 252, 0.45));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d-fade,
+  .d-trace,
+  .d-grow,
+  .d-draw,
+  .d-glow,
+  .think-dwell.playing > span,
+  .think-pulse {
+    animation: none !important;
+  }
+
+  .d-fade {
+    opacity: 1;
+  }
+
+  .d-trace {
+    stroke-dashoffset: 0;
+  }
+
+  .d-grow {
+    transform: none;
+  }
+
+  .think-dwell.playing > span {
+    width: 100%;
+  }
 }
 
 .cost-table {
@@ -696,9 +859,9 @@ html.light .soft-hover:hover {
   letter-spacing: -0.03em;
 }
 
-@media (max-width: 1024px) {
-  .app-main {
-    grid-template-columns: 1fr !important;
+@media (max-width: 900px) {
+  .think-layout {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -27,17 +27,17 @@ export function mountDataFlow(container) {
         <text y="5" text-anchor="middle">LLM</text>
       </g>
       <circle r="6" class="flow-dot" fill="#a5b4fc">
-        <animateMotion dur="2.4s" repeatCount="indefinite">
+        <animateMotion dur="5.2s" repeatCount="indefinite">
           <mpath href="#flow-path" xlink:href="#flow-path"/>
         </animateMotion>
       </circle>
       <circle r="5" class="flow-dot" fill="#6ee7b7">
-        <animateMotion dur="2.4s" begin="0.8s" repeatCount="indefinite">
+        <animateMotion dur="5.2s" begin="1.6s" repeatCount="indefinite">
           <mpath href="#flow-path" xlink:href="#flow-path"/>
         </animateMotion>
       </circle>
       <circle r="4" class="flow-dot" fill="#fda4af">
-        <animateMotion dur="2.4s" begin="1.6s" repeatCount="indefinite">
+        <animateMotion dur="5.2s" begin="3.2s" repeatCount="indefinite">
           <mpath href="#flow-path" xlink:href="#flow-path"/>
         </animateMotion>
       </circle>
