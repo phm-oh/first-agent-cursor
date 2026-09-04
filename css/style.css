@@ -44,9 +44,69 @@ html.light {
   box-sizing: border-box;
 }
 
+.flow-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.flow-svg text {
+  fill: #e4e4e7;
+  font-size: 12px;
+  font-family: Inter, Sarabun, sans-serif;
+}
+
+.flow-ring {
+  fill: rgba(99, 102, 241, 0.18);
+  stroke: #818cf8;
+  stroke-width: 2;
+}
+
+.flow-ring.emerald {
+  fill: rgba(16, 185, 129, 0.16);
+  stroke: #34d399;
+}
+
+.flow-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.think-node circle {
+  fill: rgba(99, 102, 241, 0.35);
+  stroke: #818cf8;
+}
+
+.think-pulse {
+  fill: none;
+  stroke: #a5b4fc;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 1.8s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.chat-in {
+  animation: fadeUp 0.45s ease both;
+}
+
 html,
 body {
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -392,6 +452,7 @@ html.light .tank {
   background: rgba(9, 9, 11, 0.86);
   backdrop-filter: blur(16px);
   z-index: 20;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
 
 html.light .caption-bar {
@@ -638,5 +699,31 @@ html.light .soft-hover:hover {
 @media (max-width: 1024px) {
   .app-main {
     grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .step-item {
+    min-width: 72px;
+  }
+
+  .step-item .text-\[11px\] {
+    font-size: 10px;
+  }
+
+  .btn-primary,
+  #next-btn,
+  #reset-btn,
+  #restart-btn,
+  #start-btn {
+    min-height: 44px;
+  }
+
+  .chip-virtual {
+    height: min(320px, 46vh);
+  }
+
+  .chat-bubble {
+    max-width: 92%;
   }
 }

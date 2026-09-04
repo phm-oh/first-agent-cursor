@@ -60,6 +60,16 @@ export function generateMockResponse(inputText, options = {}) {
 
   const vars = extractKeywords(text);
   const charCount = text.length;
+  const mentionsTokens = /token|context|โทเคน|บริบท|overflow/i.test(text);
+
+  if (mentionsTokens && charCount > 40) {
+    const friendly = [
+      "Token คือชิ้นข้อความเล็ก ๆ ที่โมเดลใช้คิด ไม่ใช่คำเต็มเสมอไป ภาษาไทยมักถูกหั่นถี่กว่าภาษาอังกฤษ",
+      "Context Window คือความจุต่อรอบ ถ้าข้อความยาวเกินลิมิต ส่วนที่ล้นโมเดลจะอ่านไม่ถึง",
+      `จากที่คุณถามเรื่อง ${vars.topic} จุดที่ควรจำคือ ${vars.takeaway}`,
+    ];
+    return `คำตอบจำลองสำหรับห้องเรียน\n\n1. ${friendly[0]}\n2. ${friendly[1]}\n3. ${friendly[2]}\n\nสรุป: นับ Token ก่อนส่งงานจริง จะเห็นทั้งความเข้าใจของโมเดลและต้นทุน`;
+  }
 
   if (charCount < 24) {
     return fill(catalog.fallbacks.veryShort, vars);

@@ -3,10 +3,16 @@
 เครื่องมือสื่อการเรียนการสอนสำหรับเรื่อง **Token**, **Context Window** และต้นทุนของโมเดลภาษา  
 ออกแบบมาให้เดินเรื่องทีละขั้น นักเรียนที่ไม่เคยรู้เรื่อง Token ก็เห็นภาพรวมได้ใน 5–7 นาที
 
-> Phase 2 (ปัจจุบัน): เดินทางทีละขั้นด้วยปุ่ม Next / ย้อนกลับ  
-> Phase 1 ยังใช้ได้เป็นหน้า Overview ก่อนกดเริ่ม
+> Phase 4 (ปัจจุบัน): Animation เส้นทางข้อมูล, จำลองในโมเดล, Mock Response, หน้าต่างแชท  
+> เปิดบนมือถือได้ผ่าน GitHub Pages หลัง deploy
 
-## เปิดใช้งาน
+## เปิดบนเว็บ (GitHub Pages)
+
+หลังเปิด Pages ที่ repo แล้ว ใช้ลิงก์:
+
+https://phm-oh.github.io/first-agent-cursor/
+
+## เปิดบนเครื่องตัวเอง
 
 เปิดด้วยเว็บเซิร์ฟเวอร์ในโฟลเดอร์โปรเจกต์ (ไม่เปิดเป็นไฟล์ตรง ๆ เพราะต้องโหลด JSON และโมดูล)
 
@@ -16,7 +22,7 @@ python3 -m http.server 8080
 
 แล้วเปิด [http://localhost:8080](http://localhost:8080)
 
-## ใช้ในห้องเรียน (Phase 2)
+## ใช้ในห้องเรียน
 
 1. กด **โหลดตัวอย่าง** หรือพิมพ์ System + User เอง
 2. เลือกโมเดลด้านซ้าย สังเกตลิมิตคนละขนาด
@@ -48,6 +54,7 @@ js/models.js
 js/mock.js
 js/simulation.js
 js/stages.js
+js/animation.js
 js/virtual-chips.js
 data/models.json
 data/templates.json

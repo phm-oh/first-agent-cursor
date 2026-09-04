@@ -1,5 +1,5 @@
 /**
- * Per-step teaching views for the Phase 2 walker.
+ * Per-step teaching views.
  */
 
 export const THINK_STAGES = [
@@ -219,20 +219,14 @@ function renderDispatchStage(ctx) {
     <div class="stage-head">
       <p class="help-kicker">Step 5</p>
       <h2 class="thai text-xl font-semibold mt-1">เตรียมส่งเข้า LLM</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ก่อนเข้าโมเดล ระบบจัดบทบาทและใส่ Special Tokens เป็นโครงของบทสนทนา</p>
+      <p class="thai text-sm text-zinc-400 mt-2">ดูเส้นทางข้อมูล: ข้อความถูกจัดลำดับ ใส่ Special Tokens แล้วไหลเข้าโมเดล</p>
     </div>
-    <div class="dispatch-path mt-6" aria-hidden="true">
-      <div class="dispatch-node">Input</div>
-      <div class="dispatch-line"></div>
-      <div class="dispatch-node">Special tokens</div>
-      <div class="dispatch-line"></div>
-      <div class="dispatch-node">Model</div>
-    </div>
-    <div class="glass panel p-5 mt-5">
-      <p class="help-kicker">Special tokens</p>
+    <div id="data-flow" class="glass panel p-4 mt-5 overflow-hidden"></div>
+    <div class="glass panel p-5 mt-4">
+      <p class="help-kicker">Special tokens ที่ถูกเพิ่ม</p>
       <div class="flex flex-wrap gap-1.5 mt-3">${chips}</div>
-      <p class="thai text-sm text-zinc-400 mt-4">ตัวอย่างโครง: start → system → user → end แล้วจึงตามด้วย ${formatTokens(report.counts.input)} tokens ของเนื้อหา</p>
-      <p class="mono text-xs text-indigo-300 mt-2">+${extras} special tokens (เชิงแนวคิด เพื่อการสอน)</p>
+      <p class="thai text-sm text-zinc-400 mt-4">โครงที่ใช้สอน: start → system → user → end ตามด้วยเนื้อหา ${formatTokens(report.counts.input)} tokens</p>
+      <p class="mono text-xs text-indigo-300 mt-2">+${extras} special tokens (เชิงแนวคิด)</p>
     </div>
   `;
 }
@@ -241,7 +235,7 @@ function renderThinkStage(ctx) {
   const index = ctx.thinkIndex % THINK_STAGES.length;
   const cards = THINK_STAGES.map((stage, i) => {
     const active = i === index;
-    return `<article class="think-card ${active ? "active" : ""}">
+    return `<article class="think-card ${active ? "active" : ""}" data-think="${i}">
       <p class="mono text-xs text-zinc-500">0${i + 1}</p>
       <h3 class="font-medium mt-1">${escape(ctx, stage.title)}</h3>
       <p class="thai text-sm text-zinc-400 mt-2 leading-relaxed">${escape(ctx, stage.detail)}</p>
@@ -252,23 +246,28 @@ function renderThinkStage(ctx) {
     <div class="stage-head">
       <p class="help-kicker">Step 6</p>
       <h2 class="thai text-xl font-semibold mt-1">จำลองการประมวลผล</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ไม่ใช่ภายในโมเดลจริง เป็นภาพแนวคิดให้นักเรียนเห็นลำดับการคิด</p>
+      <p class="thai text-sm text-zinc-400 mt-2">จุดที่สว่างคือขั้นที่กำลังคิด — เป็นภาพแนวคิด ไม่ใช่โมเดลจริง</p>
     </div>
-    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3 mt-5">${cards}</div>
+    <div id="think-flow" class="glass panel p-4 mt-5 overflow-hidden"></div>
+    <p id="think-status" class="thai text-sm text-indigo-300 mt-3">${escape(ctx, THINK_STAGES[index].title)} · ${escape(ctx, THINK_STAGES[index].detail)}</p>
+    <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3 mt-4">${cards}</div>
   `;
 }
 
 function renderOutputStage(ctx) {
-  const { outputText, escapeHtml, formatTokens, outputTokens } = ctx;
+  const { formatTokens, outputTokens } = ctx;
   return `
     <div class="stage-head">
       <p class="help-kicker">Step 7</p>
       <h2 class="thai text-xl font-semibold mt-1">สร้างผลลัพธ์จำลอง</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">คำตอบนี้สร้างจากเทมเพลตเพื่อการสอน ไม่ได้เรียกโมเดลจริง</p>
+      <p class="thai text-sm text-zinc-400 mt-2">คำตอบถูกประกอบทีละ Token จากเทมเพลตการสอน ไม่ได้เรียก API จริง</p>
     </div>
     <article class="glass panel p-5 mt-5">
-      <p class="help-kicker">Mock response</p>
-      <div class="thai text-sm leading-relaxed whitespace-pre-wrap mt-3">${escapeHtml(outputText || "—")}</div>
+      <div class="flex items-center gap-2">
+        <span class="status-dot ready"></span>
+        <p class="help-kicker">กำลังเขียนคำตอบ</p>
+      </div>
+      <div id="typed-output" class="thai text-sm leading-relaxed whitespace-pre-wrap mt-3 min-h-[6rem]"></div>
     </article>
     <p class="mono text-xs text-zinc-500 mt-3">ขาออกประมาณ ${formatTokens(outputTokens.length)} tokens</p>
   `;
@@ -282,7 +281,7 @@ function renderReturnStage(ctx) {
     <div class="stage-head">
       <p class="help-kicker">Step 8</p>
       <h2 class="thai text-xl font-semibold mt-1">Tokenize ขากลับ + รวมราคา</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">คำตอบก็ถูกหั่นเป็น Token เช่นกัน แล้วนำไปคูณราคาขาออก</p>
+      <p class="thai text-sm text-zinc-400 mt-2">ขาออกถูกหั่นเป็น Token เหมือนขาเข้า แล้วคูณราคาฝั่ง Output</p>
     </div>
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mt-5">
       ${metric("Input tokens", formatTokens(report.counts.input))}
@@ -292,7 +291,7 @@ function renderReturnStage(ctx) {
     </div>
     <div class="glass panel p-5 mt-4">
       <p class="help-kicker">Total</p>
-      <p class="mono text-3xl font-semibold mt-2">${formatUsd(inputCost + outputCost)}</p>
+      <p id="total-cost" class="mono text-3xl font-semibold mt-2">${formatUsd(inputCost + outputCost)}</p>
       <p class="thai text-sm text-zinc-400 mt-2">รวมขามา-ขากลับของรอบนี้ บน ${escape(ctx, model.name)}</p>
     </div>
     <div id="output-chip-scroll" class="chip-virtual glass panel mt-4" aria-label="Output tokens"></div>
@@ -308,14 +307,17 @@ function renderChatStage(ctx) {
     <div class="stage-head">
       <p class="help-kicker">Step 9</p>
       <h2 class="thai text-xl font-semibold mt-1">กลับสู่หน้าต่างแชท</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ผู้ใช้เห็นบทสนทนา แต่เบื้องหลังคือ Token, Context และต้นทุนทั้งสองขา</p>
+      <p class="thai text-sm text-zinc-400 mt-2">นี่คือสิ่งที่ผู้ใช้เห็น — Token กับราคาถูกสรุปไว้ใต้บทสนทนา</p>
     </div>
-    <div class="chat-thread glass panel p-5 mt-5 space-y-3">
-      ${systemPrompt.trim() ? `<div class="chat-bubble system thai text-sm">${escapeHtml(systemPrompt)}</div>` : ""}
-      <div class="chat-bubble user thai text-sm">${escapeHtml(user)}</div>
-      <div class="chat-bubble assistant thai text-sm whitespace-pre-wrap">${escapeHtml(outputText || "")}</div>
+    <div class="chat-thread glass panel p-4 sm:p-5 mt-5 space-y-3">
+      ${systemPrompt.trim() ? `<div class="chat-bubble system thai text-sm chat-in">${escapeHtml(systemPrompt)}</div>` : ""}
+      <div class="chat-bubble user thai text-sm chat-in" style="animation-delay:.12s">${escapeHtml(user)}</div>
+      <div class="chat-bubble assistant thai text-sm whitespace-pre-wrap chat-in" style="animation-delay:.28s">${escapeHtml(outputText || "")}</div>
     </div>
-    <p class="thai text-sm text-zinc-400 mt-4">ขาเข้า ${formatTokens(report.counts.input)} · ขาออก ${formatTokens(outputTokens.length)} · รวม ${formatUsd(total)}</p>
+    <div class="chat-meter glass panel p-4 mt-4 flex flex-wrap gap-3 justify-between items-center">
+      <p class="thai text-sm">ขาเข้า ${formatTokens(report.counts.input)} · ขาออก ${formatTokens(outputTokens.length)}</p>
+      <p class="mono text-sm text-indigo-300">รวม ${formatUsd(total)}</p>
+    </div>
   `;
 }
 

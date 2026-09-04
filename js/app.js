@@ -19,6 +19,7 @@ import { loadTemplates, generateMockResponse } from "./mock.js";
 import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js";
 import { renderStage, THINK_STAGES } from "./stages.js";
 import { mountVirtualChips } from "./virtual-chips.js";
+import { mountDataFlow, mountThinkFlow, typeText } from "./animation.js";
 
 const SAMPLE_SYSTEM =
   "คุณเป็นผู้ช่วยสอนเรื่อง Token ของโมเดลภาษา ตอบกระชับ ชัดเจน และใช้ภาษาที่นักเรียนเข้าใจได้";
@@ -53,6 +54,7 @@ const state = {
 let debounceTimer = null;
 let thinkTimer = null;
 let unmountChips = null;
+let stopMotion = null;
 
 function uid() {
   return `id-${Date.now().toString(36)}-${Math.random().toString(16).slice(2, 8)}`;
@@ -435,11 +437,23 @@ function stopThinkLoop() {
 
 function startThinkLoop() {
   stopThinkLoop();
-  state.thinkIndex = 0;
   thinkTimer = setInterval(() => {
     state.thinkIndex = (state.thinkIndex + 1) % THINK_STAGES.length;
-    if (state.currentStep === 6) renderCurrentStage();
+    if (state.currentStep !== 6) return;
+    const stage = THINK_STAGES[state.thinkIndex];
+    document.querySelectorAll("[data-think]").forEach((card) => {
+      card.classList.toggle("active", Number(card.dataset.think) === state.thinkIndex);
+    });
+    const status = $("think-status");
+    if (status && stage) status.textContent = `${stage.title} · ${stage.detail}`;
   }, 1400);
+}
+
+function clearMotion() {
+  if (stopMotion) {
+    stopMotion();
+    stopMotion = null;
+  }
 }
 
 function renderCurrentStage() {
@@ -447,6 +461,7 @@ function renderCurrentStage() {
     unmountChips();
     unmountChips = null;
   }
+  clearMotion();
   const root = $("stage-root");
   root.innerHTML = renderStage(state.currentStep, stageContext());
   if (state.currentStep === 2) {
@@ -462,6 +477,15 @@ function renderCurrentStage() {
         note.textContent = `เลื่อนดูได้ทั้งหมด ${formatTokens(state.report.allPieces.length)} tokens · เขียวอยู่ในลิมิต · แดงคือล้น`;
       }
     }
+  }
+  if (state.currentStep === 5) {
+    stopMotion = mountDataFlow($("data-flow"));
+  }
+  if (state.currentStep === 6) {
+    stopMotion = mountThinkFlow($("think-flow"));
+  }
+  if (state.currentStep === 7) {
+    stopMotion = typeText($("typed-output"), state.outputText, 14);
   }
   if (state.currentStep === 8) {
     const host = $("output-chip-scroll");
@@ -488,7 +512,7 @@ function updateChrome() {
   const step = getStep(state.currentStep);
   if (!state.started) {
     $("step-progress").textContent = "ยังไม่เริ่มจำลอง — กดเริ่มกระบวนการเมื่อพร้อม";
-    $("phase-label").textContent = "Phase 2 · Step-by-step";
+    $("phase-label").textContent = "Phase 4 · Simulation";
   } else {
     $("step-progress").textContent = `ขั้นที่ ${state.currentStep} จาก ${TOTAL_STEPS} · ${step.titleTh}`;
     $("phase-label").textContent = `ขั้น ${state.currentStep} / ${TOTAL_STEPS}`;
@@ -505,6 +529,7 @@ function applySimulation() {
     renderCurrentStage();
   } else {
     stopThinkLoop();
+    clearMotion();
     renderVisualization();
     renderLiveBadge();
   }
