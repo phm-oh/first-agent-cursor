@@ -28,9 +28,13 @@ const SAMPLE_USER = `ช่วยอธิบายให้หน่อยว�
 
 ฉันอยากได้ตัวอย่างภาษาไทยกับภาษาอังกฤษสั้น ๆ เพื่อเอาไปสอนในห้องเรียน`;
 
-const OVERFLOW_USER = `${"นักเรียนถามเรื่อง Token ซ้ำแล้วซ้ำอีก ".repeat(40)}
-สรุปท้ายบท: ถ้าข้อความยาวเกิน Context Window โมเดลจะมองไม่เห็นส่วนที่ล้น
-${"เพิ่มรายละเอียดประกอบการสอนเรื่องต้นทุนและจำนวน Token ".repeat(30)}`;
+const OVERFLOW_SEED = `ช่วยสรุปบทเรียนเรื่อง Token และ Context Window ให้ยาวพอสำหรับสาธิต Overflow
+
+ประเด็นหลัก: ถ้าข้อความยาวเกินลิมิต โมเดลจะมองไม่เห็นส่วนที่ล้น และส่วนนั้นจะไม่ถูกนำไปคิดราคาฝั่งความเข้าใจ
+
+`;
+const OVERFLOW_PAD =
+  "รายละเอียดเพิ่มเติมสำหรับสอน Overflow ของหน้าต่างบริบท — นักเรียนถามซ้ำเรื่อง Token ต้นทุน และส่วนที่ล้น ";
 
 const state = {
   theme: "dark",
@@ -411,17 +415,32 @@ function resetProcess() {
   setCaption("พิมพ์ข้อความด้านซ้าย แล้วสังเกต Context Window ด้านขวาว่า Token ถูกใช้ไปเท่าไร");
 }
 
+function buildOverflowText(limit) {
+  const padTokens = Math.max(1, tokenizeText(OVERFLOW_PAD).length);
+  const seedTokens = tokenizeText(SAMPLE_SYSTEM + "\n" + OVERFLOW_SEED).length;
+  const need = Math.max(padTokens, limit + 1200 - seedTokens);
+  const repeats = Math.ceil(need / padTokens);
+  return OVERFLOW_SEED + OVERFLOW_PAD.repeat(repeats);
+}
+
 function loadSample(kind) {
   state.systemPrompt = SAMPLE_SYSTEM;
   $("system-input").value = SAMPLE_SYSTEM;
-  state.turns = [{ id: uid(), role: "user", content: kind === "overflow" ? OVERFLOW_USER : SAMPLE_USER }];
-  if (kind === "overflow") state.modelId = "model-f";
+  if (kind === "overflow") {
+    state.modelId = "model-f";
+    const limit = getModelById(state.modelId).contextLimit;
+    state.turns = [{ id: uid(), role: "user", content: buildOverflowText(limit) }];
+  } else {
+    state.turns = [{ id: uid(), role: "user", content: SAMPLE_USER }];
+  }
   renderTurns();
   renderModels();
-  scheduleAnalyze();
+  state.report = buildReport();
+  renderVisualization();
+  renderLiveBadge();
   setCaption(
     kind === "overflow"
-      ? "โหลดตัวอย่าง Overflow แล้ว — สลับไป Teaching Mini เพื่อเห็นแถบสีแดงชัดเจน"
+      ? "โหลดตัวอย่าง Overflow แล้ว — Teaching Mini ถูกเลือกเพื่อให้เห็นส่วนที่ล้นเป็นสีแดง"
       : "โหลดตัวอย่างสำหรับห้องเรียนแล้ว สังเกตจำนวน Token แล้วกดเริ่มกระบวนการได้"
   );
   refreshIcons();

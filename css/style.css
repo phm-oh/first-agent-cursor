@@ -470,6 +470,26 @@ html.light .caption-bar {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--model-color, var(--indigo)) 20%, transparent);
 }
 
+.hairline {
+  border-color: var(--line);
+}
+
+.soft-fill {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html.light .soft-fill {
+  background: rgba(24, 24, 27, 0.04);
+}
+
+.soft-hover:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+html.light .soft-hover:hover {
+  background: rgba(24, 24, 27, 0.06);
+}
+
 @media (max-width: 1024px) {
   .app-main {
     grid-template-columns: 1fr !important;
