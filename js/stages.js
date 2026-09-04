@@ -7,64 +7,68 @@ export const THINK_STAGES = [
     id: "embed",
     title: "Embedding",
     titleTh: "ฝังความหมาย",
-    detail: "รหัส Token ยังไม่มีความหมาย — ต้องแปลงเป็นเวกเตอร์แล้วบอกตำแหน่งก่อนเข้าบล็อก",
-    caption: "Embedding คือตารางแปลงรหัส Token เป็นจุดในปริภูมิความหมาย แล้วบวกตำแหน่งในประโยค",
-    example: "ประโยคสอน: แมว กิน ปลา → ได้สามรหัส เช่น 4821, 8910, 3344 แล้วกลายเป็นสามเวกเตอร์คนละอัน",
-    inModel: "ชั้นล่างสุดของโครงโมเดล ก่อนเข้า Transformer block — ดูกล่อง Embedding ด้านซ้าย",
+    plain: "รหัสยังไม่มีความหมาย จนกว่าจะถูกปักลงเป็นจุดในพื้นที่ความหมาย",
+    detail: "หลังหั่นข้อความแล้ว โมเดลเห็นแค่เลข ID — Embedding คือตารางเปิดความหมายแล้วบอกตำแหน่ง",
+    caption: "OpenAI เริ่มตรงนี้: Token สีจากข้อความคุณ ถูกแปลงเป็นจุด ก่อนคิดคำตอบ",
+    example: "ใช้ Token จริงจากกล่องที่คุณพิมพ์ ไม่ใช่ประโยคแมวคนละชุด — สลับลำดับแล้วจุดบนสมุดโน้ตไม่เหมือนเดิม",
+    inModel: "จุดแรกบนเส้นหลัก (residual stream) ก่อน Attention อ่าน",
     bullets: [
-      "หลัง Tokenize เหลือแค่เลข ID — โมเดลยังไม่รู้ว่า แมว ใกล้ แมวตัว หรือ หมา",
-      "ตาราง Embedding มีแถวเท่าจำนวนคำในคลัง แต่ละแถวเป็นเวกเตอร์หลายร้อยถึงหลายพันมิติ",
-      "คำที่ความหมายใกล้กัน มักได้เวกเตอร์ที่ «อยู่ใกล้กัน» ในปริภูมินี้",
-      "บวก Positional Encoding เพื่อแยก แมว กิน ปลา ออกจาก ปลา กิน แมว",
-      "ผลลัพธ์: ทุกช่องใน Context Window มีเวกเตอร์หนึ่งอัน พร้อมให้ Attention อ่าน",
+      "หลัง Tokenize เหลือแค่เลข ID — ยังไม่รู้ว่าคำใกล้กันหรือตรงข้าม",
+      "ตาราง Embedding มีแถวเท่าคลังคำ แต่ละแถวเป็นเวกเตอร์หลายร้อยถึงหลายพันมิติ",
+      "คำที่ความหมายใกล้กัน มักได้จุดที่อยู่ใกล้กัน",
+      "บวกตำแหน่ง เพื่อแยกประโยคที่คำเหมือนกันแต่ลำดับต่างกัน",
+      "ผลลัพธ์คือสมุดโน้ตหนึ่งแถวต่อหนึ่งช่องใน Context Window",
     ],
   },
   {
     id: "attention",
     title: "Attention",
     titleTh: "ความสนใจ",
-    detail: "แต่ละ Token มอง Token อื่นในหน้าต่าง แล้วชั่งน้ำหนักว่าจะอ่านใครมากน้อย",
-    caption: "Self-Attention ให้ Token อ่านกันใน Context Window ตามน้ำหนัก — นี่คือจุดที่บริบทถูกดึงมาใช้",
-    example: "ในประโยค «แมวกินปลา เพราะมันหิว» คำว่า มัน ให้น้ำหนักสูงกับ แมว ไม่ใช่กับ ปลา",
-    inModel: "กล่อง Self-Attention ในบล็อกกลาง ทำซ้ำหลายหัว (multi-head) และหลายชั้น",
+    plain: "Token ท้ายสุดมองย้อนในหน้าต่างคุณ แล้วชั่งว่าจะอ่านใครมาก",
+    detail: "Self-Attention ให้แต่ละ Token อ่าน Token อื่นในหน้าต่างตามน้ำหนัก — นี่คือบริบท",
+    caption: "Anthropic วาดชั้นนี้เป็นการอ่าน-เขียนบนเส้นหลัก ไม่ใช่ความจำระยะยาว",
+    example: "Token ล่าสุดในข้อความคุณจะชี้กลับไป Token แรกเป็นภาพสอน — น้ำหนักสูง = อ่านมาก",
+    inModel: "จุด Attention บนเส้นหลัก ทำหลายหัว แล้วเขียนกลับลงสมุดโน้ต",
     bullets: [
-      "จากเวกเตอร์เดิมสร้างสามชุด: Query (ถาม) Key (กุญแจ) Value (ค่าที่จะอ่าน)",
-      "คะแนน = Query คูณ Key แล้ว softmax เป็นน้ำหนัก 0–1 รวมกันได้ประมาณ 1",
-      "น้ำหนักสูง = อ่านมาก น้ำหนักต่ำ = มองผ่าน — เลยจับสรรพนามกับคำนามได้",
-      "ทำขนานทั้งลำดับในหน้าต่างเดียวกัน จึงเห็นประโยคยาวได้ในรอบเดียว",
-      "Multi-head คือมองหลายมุมพร้อมกัน เช่น ใครทำ / ทำอะไร / ชี้กลับไปใคร",
+      "สร้างสามชุดจากเวกเตอร์เดิม: ถาม กุญแจ และค่าที่จะอ่าน",
+      "น้ำหนักรวมกันได้ประมาณ 1 — สูงคืออ่านมาก ต่ำคือมองผ่าน",
+      "เลยจับสรรพนามกับคำนามได้ โดยไม่ต้องมีกฎไวยากรณ์แยก",
+      "ทำขนานทั้งลำดับในหน้าต่างเดียวกัน",
+      "หลายหัว = มองหลายมุม เช่น ใครทำ / ทำอะไร / ชี้กลับไปใคร",
     ],
   },
   {
     id: "ffn",
     title: "Feed-forward",
     titleTh: "ชั้นแปลงความหมาย",
-    detail: "หลังได้อ่านบริบทแล้ว แปลงเวกเตอร์ทีละตำแหน่ง เพื่อคิดต่อ ไม่ผสมข้าม Token",
-    caption: "Feed-forward ไม่ดึง Token อื่นมาปน — มันแปลงความหมายของตำแหน่งนั้นหลัง Attention รวมบริบทแล้ว",
-    example: "ตำแหน่งคำว่า มัน ตอนนี้มีบริบทของ แมว แล้ว FFN ช่วยสรุปเป็น «สรรพนามชี้แมว»",
-    inModel: "กล่อง Feed-forward ในบล็อกเดียวกับ Attention — คู่นี้ถูกซ้อนหลายสิบชั้น",
+    plain: "หลังได้อ่านแล้ว คิดต่อทีละช่อง ไม่ดึง Token อื่นมาปนในรอบนี้",
+    detail: "FFN แปลงความหมายของตำแหน่งนั้นหลัง Attention รวมบริบทแล้ว",
+    caption: "บนเส้นหลัก: Attention อ่านของคนอื่น FFN ช่วยสรุปของช่องนี้",
+    example: "ช่อง Token ล่าสุดของคุณตอนนี้มีบริบทจากต้นประโยคแล้ว ชั้นนี้คิดต่อที่ช่องนั้น",
+    inModel: "จุด FFN บนเส้นหลัก คู่กับ Attention ถูกซ้อนหลายสิบชั้น",
     bullets: [
-      "ต่างจาก Attention: ชั้นนี้ดูทีละตำแหน่ง ไม่ได้ดึงของช่องอื่นมาปนในรอบนี้",
-      "โครงคล้าย MLP สั้น: ขยายมิติ (มักประมาณ 4 เท่า) → ฟังก์ชันไม่เชิงเส้น → บีบกลับ",
-      "Residual บวกของเดิมเข้าไป LayerNorm ช่วยให้ซ้อนชั้นซ้ำ ๆ ได้โดยไม่พัง",
-      "บล็อก Attention + FFN คือ «ตัวโมเดล» ส่วนใหญ่ ไม่ใช่ Embedding หรือ LM Head",
-      "ยิ่งซ้อนหลายชั้น ยิ่งผสมบริบทลึก แต่ละชั้นยังทำงานใน Context Window เดิม",
+      "ต่างจาก Attention: ไม่ดึงช่องอื่นมาปนในรอบนี้",
+      "ขยายมิติ แล้วบีบกลับ คล้าย MLP สั้น",
+      "Residual บวกของเดิม เพื่อไม่ให้ของเก่าบนสมุดโน้ตหาย",
+      "คู่ Attention + FFN คือตัวโมเดลส่วนใหญ่",
+      "ซ้อนหลายชั้นแต่ยังทำงานใน Context Window เดิม",
     ],
   },
   {
     id: "generate",
     title: "Generation",
     titleTh: "สร้างคำตอบ",
-    detail: "ทาย Token ถัดไปทีละตัว แปะต่อท้าย แล้ววนทั้งบล็อกใหม่จนกว่าจะจบ",
-    caption: "ขาออกเกิดทีละ Token — เลือกจากคลัง แล้ววนกลับไป Embedding ไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
-    example: "มีแล้ว: แมว กิน  → โมเดลให้ ปลา 62%, อาหาร 24%, นม 14% แล้วเลือก ปลา ต่อท้าย",
-    inModel: "กล่อง LM Head บนสุด หลังจากผ่านบล็อกมาแล้ว — แล้วลูกศรวนกลับไปต้นลำดับ",
+    plain: "ทายแค่ Token ถัดไป แปะต่อท้าย แล้ววนทั้งเส้นใหม่",
+    detail: "ขาออกเกิดทีละตัว จากคลังคำ — Copilot / ChatGPT / Claude เขียนบนจอแบบนี้",
+    caption: "หัวใจที่ห้องแล็บใช้สอน: โมเดลไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
+    example: "แถบความน่าจะเป็นดึงจากคำตอบจำลองของข้อความคุณ แล้วเลือกตัวแรกต่อท้าย",
+    inModel: "จุด LM Head ท้ายเส้นหลัก แล้ววนกลับไป Embed",
     bullets: [
-      "เวกเตอร์ตำแหน่งล่าสุดผ่าน LM Head กลายเป็นคะแนนของทุก Token ในคลัง",
-      "softmax แปลงคะแนนเป็นความน่าจะเป็น รวมกันได้ 1 เช่น ปลา 62%",
-      "เลือกตัวที่สูงสุด หรือสุ่มตามอุณหภูมิ — ได้ออกมาเพียง 1 Token",
-      "Token ใหม่ถูกต่อท้าย ลำดับใน Context Window ยาวขึ้น 1 แล้ววน Embedding ใหม่",
-      "หยุดเมื่อเจอจุดจบ หรือครบจำนวนที่กำหนด — นี่คือที่มาของคำตอบทีละคำบนหน้าจอ",
+      "ช่องล่าสุดบนสมุดโน้ตผ่าน LM Head เป็นคะแนนของทั้งคลัง",
+      "softmax แปลงเป็นความน่าจะเป็น รวมกันได้ 1",
+      "เลือกตัวสูงสุด หรือสุ่มตามอุณหภูมิ ได้แค่ 1 Token",
+      "ต่อท้ายหน้าต่าง แล้ววน Embed → Attention → FFN",
+      "หยุดเมื่อจบหรือครบจำนวน — นี่คือที่มาของคำตอบทีละคำ",
     ],
   },
 ];
@@ -318,12 +322,13 @@ function renderDispatchStage(ctx) {
 function renderThinkStage(ctx) {
   const index = ctx.thinkIndex % THINK_STAGES.length;
   const current = THINK_STAGES[index];
+  const teacher = ctx.thinkDepth === "teacher";
   const cards = THINK_STAGES.map((stage, i) => {
     const active = i === index;
     return `<button type="button" class="think-card ${active ? "active" : ""}" data-think="${i}">
-      <p class="mono text-xs text-zinc-500">0${i + 1} / 04</p>
-      <h3 class="font-medium mt-1">${escape(ctx, stage.title)}</h3>
-      <p class="thai text-xs text-zinc-500 mt-1">${escape(ctx, stage.titleTh)}</p>
+      <p class="mono text-[10px] text-zinc-500">0${i + 1}</p>
+      <h3 class="font-medium mt-0.5 text-sm">${escape(ctx, stage.title)}</h3>
+      <p class="thai text-xs text-zinc-500 mt-0.5">${escape(ctx, stage.titleTh)}</p>
     </button>`;
   }).join("");
   const bullets = current.bullets
@@ -332,32 +337,39 @@ function renderThinkStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p id="think-kicker" class="help-kicker">Step 6 · ชั้นในโมเดล · 0${index + 1} / 04</p>
+      <p id="think-kicker" class="help-kicker">Step 6 · หนึ่งเรื่องเดียว · ทาย Token ถัดไป</p>
       <h2 class="thai text-xl font-semibold mt-1">${escape(ctx, current.title)} — ${escape(ctx, current.titleTh)}</h2>
-      <p id="think-status" class="thai text-sm text-zinc-400 mt-2">${escape(ctx, current.detail)}</p>
+      <p id="think-status" class="thai text-sm text-zinc-400 mt-2">${escape(ctx, current.plain)}</p>
     </div>
     <div id="think-dwell" class="think-dwell playing mt-4" style="--think-ms: 11s"><span></span></div>
-    <p class="text-[11px] text-zinc-500 thai mt-2">แถบนี้เต็มใน 11 วินาทีต่อชั้น — กดหยุดอัตโนมัติถ้าจะอธิบายเอง</p>
+    <div class="flex flex-wrap items-center justify-between gap-2 mt-3">
+      <p class="text-[11px] text-zinc-500 thai">11 วินาทีต่อชั้น · กดหยุดถ้าจะยืนอธิบาย</p>
+      <div class="think-depth" role="tablist" aria-label="ระดับคำอธิบาย">
+        <button type="button" id="think-depth-simple" class="think-depth-btn ${teacher ? "" : "active"}" data-depth="simple">นักเรียน</button>
+        <button type="button" id="think-depth-teacher" class="think-depth-btn ${teacher ? "active" : ""}" data-depth="teacher">ครู / สูตร</button>
+      </div>
+    </div>
     <div class="think-card-row mt-4">${cards}</div>
     <div id="think-flow" class="mt-4"></div>
-    <div class="grid md:grid-cols-2 gap-3 mt-4">
-      <article class="glass panel p-4 sm:p-5">
-        <p class="help-kicker">อ่านให้จบก่อนไปขั้นย่อยถัดไป</p>
-        <ul id="think-bullets" class="mt-3 space-y-2 list-disc pl-5">${bullets}</ul>
-      </article>
-      <article class="glass panel p-4 sm:p-5">
-        <p class="help-kicker">ตัวอย่างในห้อง</p>
-        <p id="think-example" class="thai text-sm text-zinc-300 mt-3 leading-relaxed">${escape(ctx, current.example)}</p>
-        <p class="help-kicker mt-4">ตำแหน่งในโครงโมเดล</p>
-        <p id="think-in-model" class="thai text-sm text-zinc-300 mt-2 leading-relaxed">${escape(ctx, current.inModel)}</p>
-      </article>
+    <div id="think-details" class="${teacher ? "" : "hidden"}">
+      <div class="grid md:grid-cols-2 gap-3 mt-4">
+        <article class="glass panel p-4 sm:p-5">
+          <p class="help-kicker">รายละเอียดสำหรับครู</p>
+          <ul id="think-bullets" class="mt-3 space-y-2 list-disc pl-5">${bullets}</ul>
+        </article>
+        <article class="glass panel p-4 sm:p-5">
+          <p class="help-kicker">จากข้อความนี้</p>
+          <p id="think-example" class="thai text-sm text-zinc-300 mt-3 leading-relaxed">${escape(ctx, current.example)}</p>
+          <p class="help-kicker mt-4">อยู่ตรงไหนบนเส้นหลัก</p>
+          <p id="think-in-model" class="thai text-sm text-zinc-300 mt-2 leading-relaxed">${escape(ctx, current.inModel)}</p>
+        </article>
+      </div>
     </div>
     <div class="flex flex-wrap gap-2 mt-4">
       <button type="button" id="think-prev" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">ย้อนขั้นย่อย</button>
       <button type="button" id="think-pause" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">หยุดอัตโนมัติ</button>
       <button type="button" id="think-next" class="btn-primary h-10 px-4 rounded-xl text-xs font-semibold thai">ขั้นย่อยถัดไป</button>
     </div>
-    <p class="text-[11px] text-zinc-500 thai mt-2">เดินช้าเป็นห้องเรียน · กดการ์ดเพื่อกระโดด · จบ Generation แล้วค่อยกด Next ของขั้น 7</p>
   `;
 }
 
