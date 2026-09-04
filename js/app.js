@@ -423,7 +423,18 @@ function buildOverflowText(limit) {
   return OVERFLOW_SEED + OVERFLOW_PAD.repeat(repeats);
 }
 
+function clearAttachments() {
+  for (const item of state.attachments) {
+    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+  }
+  state.attachments = [];
+  const input = $("file-input");
+  if (input) input.value = "";
+}
+
 function loadSample(kind) {
+  clearAttachments();
+  renderFiles();
   state.systemPrompt = SAMPLE_SYSTEM;
   $("system-input").value = SAMPLE_SYSTEM;
   if (kind === "overflow") {
