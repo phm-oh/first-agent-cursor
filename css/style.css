@@ -659,6 +659,12 @@ html.light .soft-hover:hover {
   font-family: Sarabun, Inter, sans-serif;
 }
 
+.think-card-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
 .think-card {
   width: 100%;
   text-align: left;

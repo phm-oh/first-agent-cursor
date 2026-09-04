@@ -87,7 +87,7 @@ function embeddingDiagram() {
       ${defs()}
       <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>จากรหัส Token → เวกเตอร์ความหมาย + ตำแหน่งในประโยค</text>
 
-      <g class="d-fade">
+      <g>
         ${tokenBox(70, 48, "แมว", "ID 4821", "#6366f1")}
         ${tokenBox(300, 48, "กิน", "ID 8910", "#10b981")}
         ${tokenBox(530, 48, "ปลา", "ID 3344", "#f59e0b")}
@@ -147,7 +147,7 @@ function attentionDiagram() {
       ${defs()}
       <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>Self-Attention: แต่ละ Token ถามว่าควรอ่าน Token ไหนในหน้าต่าง</text>
 
-      <g class="d-fade">
+      <g>
         ${tokenBox(80, 42, "แมว", "คำนาม", "#6366f1")}
         ${tokenBox(300, 42, "กิน", "กริยา", "#10b981")}
         ${tokenBox(520, 42, "มัน", "สรรพนาม", "#f43f5e")}
@@ -182,7 +182,7 @@ function feedForwardDiagram() {
       ${defs()}
       <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>หลังรวมบริบทแล้ว แปลงความหมายทีละตำแหน่ง — ไม่ดึง Token อื่นมาปน</text>
 
-      <g class="d-fade">
+      <g>
         <rect x="36" y="86" width="110" height="140" rx="14" fill="rgba(16,185,129,0.14)" stroke="#34d399"/>
         <text x="91" y="148" text-anchor="middle" fill="#ecfdf5" font-size="13" ${FONT}>เวกเตอร์</text>
         <text x="91" y="170" text-anchor="middle" fill="#6ee7b7" font-size="11" ${FONT}>1 ตำแหน่ง</text>
@@ -228,7 +228,7 @@ function generationDiagram() {
       ${defs()}
       <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>ทายทีละ Token แล้ววนทั้งบล็อกใหม่ — ไม่ได้สร้างทั้งย่อหน้าในครั้งเดียว</text>
 
-      <g class="d-fade">
+      <g>
         ${tokenBox(48, 46, "แมว", "มีแล้ว", "#6366f1")}
         ${tokenBox(168, 46, "กิน", "มีแล้ว", "#10b981")}
         <rect class="d-glow" x="288" y="46" width="100" height="52" rx="12" fill="rgba(244,63,94,0.16)" stroke="#fb7185" stroke-dasharray="5 4"/>
