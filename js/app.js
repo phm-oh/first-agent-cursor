@@ -187,7 +187,7 @@ function renderSteps() {
     return `
       <button type="button" class="step-item ${status}" data-step="${step.id}" title="${escapeHtml(step.caption)}">
         <div class="step-dot">${step.id}</div>
-        <div class="text-[11px] text-zinc-400 thai text-center leading-tight">${escapeHtml(step.titleTh)}</div>
+        <div class="step-label text-[11px] text-zinc-400 thai text-center leading-tight">${escapeHtml(step.titleTh)}</div>
         <div class="step-line"></div>
       </button>
     `;
@@ -215,7 +215,7 @@ function renderTurns() {
               : ""
           }
         </div>
-        <textarea data-turn="${turn.id}" class="field thai text-sm min-h-[120px]" placeholder="พิมพ์คำถาม หรือบทสนทนาที่อยากจำลอง...">${escapeHtml(turn.content)}</textarea>
+        <textarea data-turn="${turn.id}" class="field thai text-sm min-h-[88px] sm:min-h-[120px]" placeholder="พิมพ์คำถาม หรือบทสนทนาที่อยากจำลอง...">${escapeHtml(turn.content)}</textarea>
       </div>`
     )
     .join("");
