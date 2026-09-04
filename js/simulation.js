@@ -1,6 +1,5 @@
 /**
  * Step-by-step simulation curriculum.
- * Phase 1 exposes the map and captions. Later phases walk each stage.
  */
 
 export const TOTAL_STEPS = 9;

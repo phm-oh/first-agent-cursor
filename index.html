@@ -46,7 +46,7 @@
             <div class="min-w-0">
               <div class="flex items-baseline gap-2">
                 <h1 class="text-lg sm:text-xl font-semibold tracking-tight">ContextFlow</h1>
-                <span class="hidden sm:inline text-[11px] text-zinc-500 font-medium">Phase 1 · Overview</span>
+                <span id="phase-label" class="hidden sm:inline text-[11px] text-zinc-500 font-medium">Phase 2 · Step-by-step</span>
               </div>
               <p class="thai text-xs text-zinc-500 truncate">เดินทางไปกับ Token ตั้งแต่ต้นจนจบ</p>
             </div>
@@ -73,14 +73,14 @@
         <div class="max-w-[1440px] mx-auto">
           <div class="flex items-center justify-between gap-3 mb-3">
             <p class="help-kicker thai">เส้นทาง 9 ขั้นตอน</p>
-            <p class="text-xs text-zinc-500 thai">ตอนนี้โฟกัสภาพรวม Input → Token → Context</p>
+            <p id="step-progress" class="text-xs text-zinc-500 thai">ยังไม่เริ่มจำลอง — กดเริ่มกระบวนการเมื่อพร้อม</p>
           </div>
           <div id="step-rail" class="step-rail flex items-start"></div>
         </div>
       </section>
 
       <main class="app-main max-w-[1440px] mx-auto w-full grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-5 px-4 sm:px-6 py-5">
-        <aside class="glass panel p-5 h-fit lg:sticky lg:top-5">
+        <aside id="input-aside" class="glass panel p-5 h-fit lg:sticky lg:top-5">
           <div class="flex items-center justify-between mb-4">
             <div>
               <p class="help-kicker">Input zone</p>
@@ -133,7 +133,7 @@
           <p class="text-[11px] text-zinc-500 mt-3 thai text-center">ลัด: Ctrl / ⌘ + Enter เพื่อเริ่ม</p>
         </aside>
 
-        <section class="space-y-5">
+        <section id="idle-viz" class="space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p class="help-kicker">Context window</p>
@@ -181,7 +181,7 @@
             <p id="token-chips-note" class="text-xs text-zinc-500 mt-3 thai"></p>
           </div>
 
-          <div class="grid md:grid-cols-3 gap-3">
+          <div id="teaching-notes" class="grid md:grid-cols-3 gap-3">
             <article class="glass panel p-4">
               <p class="help-kicker">Teaching note</p>
               <p class="thai text-sm text-zinc-300 mt-2 leading-relaxed">
@@ -202,6 +202,7 @@
             </article>
           </div>
         </section>
+        <section id="stage-root" class="hidden fade-up"></section>
       </main>
 
       <footer class="caption-bar px-4 sm:px-6 py-4">
@@ -218,10 +219,13 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button id="reset-btn" type="button" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai">
+            <button id="restart-btn" type="button" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai hidden">
+              เริ่มใหม่
+            </button>
+            <button id="reset-btn" type="button" class="h-10 px-4 rounded-xl border hairline soft-hover text-xs thai" disabled>
               ย้อนกลับ
             </button>
-            <button id="next-btn" type="button" class="h-10 px-4 rounded-xl soft-fill text-xs thai" disabled>
+            <button id="next-btn" type="button" class="btn-primary h-10 px-5 rounded-xl text-xs font-semibold thai" disabled>
               Next →
             </button>
           </div>

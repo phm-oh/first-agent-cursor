@@ -46,7 +46,8 @@ html.light {
 
 html,
 body {
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -99,9 +100,16 @@ html.light .grid-overlay {
 .app-shell {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.app-main {
+  overflow: auto;
+  min-height: 0;
 }
 
 .glass {
@@ -139,6 +147,24 @@ html.light .grid-overlay {
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  color: inherit;
+  padding: 0;
+}
+
+.step-item.upcoming {
+  opacity: 0.55;
+  cursor: default;
+}
+
+body.is-simulating .app-main {
+  grid-template-columns: 1fr !important;
+}
+
+body.is-simulating #input-aside {
+  display: none;
 }
 
 .step-dot {
@@ -363,8 +389,9 @@ html.light .tank {
 
 .caption-bar {
   border-top: 1px solid var(--line);
-  background: rgba(9, 9, 11, 0.75);
+  background: rgba(9, 9, 11, 0.86);
   backdrop-filter: blur(16px);
+  z-index: 20;
 }
 
 html.light .caption-bar {
@@ -488,6 +515,124 @@ html.light .soft-fill {
 
 html.light .soft-hover:hover {
   background: rgba(24, 24, 27, 0.06);
+}
+
+.chip-virtual {
+  position: relative;
+  height: min(420px, 55vh);
+  overflow: auto;
+  padding: 12px;
+}
+
+.chip-virtual-inner {
+  position: relative;
+  width: 100%;
+}
+
+.chip-virtual-window {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.token-chip.special {
+  background: rgba(99, 102, 241, 0.18);
+  color: #c7d2fe;
+}
+
+.dispatch-path {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.dispatch-node {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--indigo-soft);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.dispatch-line {
+  flex: 1;
+  height: 2px;
+  min-width: 20px;
+  background: linear-gradient(90deg, var(--indigo), var(--emerald));
+  animation: flow 1.8s ease-in-out infinite;
+}
+
+@keyframes flow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.think-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  opacity: 0.42;
+  background: rgba(255, 255, 255, 0.02);
+  transition: 0.3s ease;
+}
+
+.think-card.active {
+  opacity: 1;
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 4px var(--indigo-soft);
+}
+
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.cost-table th,
+.cost-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.cost-table .row-active td {
+  background: var(--indigo-soft);
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  line-height: 1.55;
+}
+
+.chat-bubble.user {
+  margin-left: auto;
+  background: var(--indigo-soft);
+}
+
+.chat-bubble.assistant {
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.chat-bubble.system {
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+}
+
+.stage-head h2 {
+  letter-spacing: -0.03em;
 }
 
 @media (max-width: 1024px) {

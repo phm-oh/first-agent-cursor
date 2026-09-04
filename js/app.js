@@ -5,7 +5,6 @@ import {
   readImageDimensions,
   estimateVisionTokens,
   formatTokenPreview,
-  getTokenizerMode,
 } from "./tokenizer.js";
 import {
   loadModels,
@@ -16,10 +15,10 @@ import {
   formatTokens,
   usagePercent,
 } from "./models.js";
-import { loadTemplates } from "./mock.js";
-import { STEPS } from "./simulation.js";
-
-const MAX_VISIBLE_CHIPS = 280;
+import { loadTemplates, generateMockResponse } from "./mock.js";
+import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js";
+import { renderStage, THINK_STAGES } from "./stages.js";
+import { mountVirtualChips } from "./virtual-chips.js";
 
 const SAMPLE_SYSTEM =
   "คุณเป็นผู้ช่วยสอนเรื่อง Token ของโมเดลภาษา ตอบกระชับ ชัดเจน และใช้ภาษาที่นักเรียนเข้าใจได้";
@@ -44,10 +43,16 @@ const state = {
   turns: [{ id: uid(), role: "user", content: "" }],
   attachments: [],
   started: false,
+  currentStep: 0,
   report: emptyReport(),
+  outputText: "",
+  outputTokens: [],
+  thinkIndex: 0,
 };
 
 let debounceTimer = null;
+let thinkTimer = null;
+let unmountChips = null;
 
 function uid() {
   return `id-${Date.now().toString(36)}-${Math.random().toString(16).slice(2, 8)}`;
@@ -95,6 +100,12 @@ function collectUserText() {
   return state.turns.map((turn) => turn.content).join("\n");
 }
 
+function sourceText() {
+  return [state.systemPrompt, collectUserText(), ...state.attachments.map((item) => item.text || "")]
+    .filter(Boolean)
+    .join("\n");
+}
+
 function buildReport() {
   const model = currentModel();
   const systemTokens = tokenizeText(state.systemPrompt);
@@ -125,8 +136,8 @@ function buildReport() {
     ...turnTokens.flatMap((item) => item.tokens.map((token) => ({ ...token, kind: "user" }))),
     ...fileTokens.flatMap((item) => item.tokens.map((token) => ({ ...token, kind: "file" }))),
     ...imageItems.flatMap((item) =>
-      Array.from({ length: item.visionTokens || 0 }, (_, index) => ({
-        text: `IMG:${item.name}:${index + 1}`,
+      Array.from({ length: Math.min(item.visionTokens || 0, 400) }, (_, index) => ({
+        text: `IMG`,
         id: index,
         kind: "image",
       }))
@@ -155,6 +166,7 @@ function buildReport() {
 }
 
 function scheduleAnalyze() {
+  if (state.started) return;
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
     state.report = buildReport();
@@ -165,17 +177,25 @@ function scheduleAnalyze() {
 
 function renderSteps() {
   const rail = $("step-rail");
-  rail.innerHTML = STEPS.map((step, index) => {
-    const preview = index < 3 ? "preview" : "";
-    const active = state.started && index < 3 ? "done" : "";
+  rail.innerHTML = STEPS.map((step) => {
+    let status = "upcoming";
+    if (state.started && step.id === state.currentStep) status = "active";
+    else if (state.started && step.id < state.currentStep) status = "done";
     return `
-      <div class="step-item ${preview} ${active}" title="${escapeHtml(step.caption)}">
+      <button type="button" class="step-item ${status}" data-step="${step.id}" title="${escapeHtml(step.caption)}">
         <div class="step-dot">${step.id}</div>
         <div class="text-[11px] text-zinc-400 thai text-center leading-tight">${escapeHtml(step.titleTh)}</div>
         <div class="step-line"></div>
-      </div>
+      </button>
     `;
   }).join("");
+
+  rail.querySelectorAll("[data-step]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!state.started) return;
+      goToStep(Number(btn.dataset.step));
+    });
+  });
 }
 
 function renderTurns() {
@@ -345,26 +365,28 @@ function renderVisualization() {
     )
     .join("");
 
-  if (state.viewMode === "tokens") renderTokenChips();
+  if (state.viewMode === "tokens") renderIdleTokenPreview();
 }
 
-function renderTokenChips() {
+function renderIdleTokenPreview() {
   const pieces = state.report.allPieces;
   const limit = state.report.counts.limit;
-  const visible = pieces.slice(0, MAX_VISIBLE_CHIPS);
-  $("token-chips").innerHTML = visible
-    .map((piece, index) => {
-      const overflow = index >= limit;
-      const preview = escapeHtml(formatTokenPreview(piece.text));
-      return `<span class="token-chip ${piece.kind} ${overflow ? "overflow" : ""}" title="#${index + 1}">${preview}</span>`;
-    })
-    .join("");
-  $("token-chips-note").textContent =
-    pieces.length > MAX_VISIBLE_CHIPS
-      ? `แสดง ${formatTokens(MAX_VISIBLE_CHIPS)} จาก ${formatTokens(pieces.length)} tokens — Virtual Scroll จะมาใน Phase 2`
-      : pieces.length
-        ? `ทั้งหมด ${formatTokens(pieces.length)} tokens`
-        : "ยังไม่มี Token ให้แสดง";
+  const host = $("token-chips");
+  if (unmountChips) {
+    unmountChips();
+    unmountChips = null;
+  }
+  if (!pieces.length) {
+    host.innerHTML = "";
+    $("token-chips-note").textContent = "ยังไม่มี Token ให้แสดง";
+    return;
+  }
+  unmountChips = mountVirtualChips(host, pieces, {
+    limit,
+    format: formatTokenPreview,
+    escapeHtml,
+  });
+  $("token-chips-note").textContent = `ทั้งหมด ${formatTokens(pieces.length)} tokens · เลื่อนดูได้ทั้งหมด`;
 }
 
 function setViewMode(mode) {
@@ -378,11 +400,115 @@ function setViewMode(mode) {
       ? "px-3 h-8 rounded-lg text-xs thai bg-indigo-500 text-white"
       : "px-3 h-8 rounded-lg text-xs thai text-zinc-400 hover:text-white";
   $("detail-panel").classList.toggle("hidden", mode !== "tokens");
-  if (mode === "tokens") renderTokenChips();
+  if (mode === "tokens") renderIdleTokenPreview();
 }
 
 function setCaption(text) {
   $("caption").textContent = text;
+}
+
+function stageContext() {
+  return {
+    report: state.report,
+    model: currentModel(),
+    models: getModels(),
+    attachments: state.attachments,
+    systemPrompt: state.systemPrompt,
+    turns: state.turns,
+    outputText: state.outputText,
+    outputTokens: state.outputTokens,
+    thinkIndex: state.thinkIndex,
+    formatTokens,
+    formatUsd,
+    calcCostUsd,
+    escapeHtml,
+    formatTokenPreview,
+  };
+}
+
+function stopThinkLoop() {
+  if (thinkTimer) {
+    clearInterval(thinkTimer);
+    thinkTimer = null;
+  }
+}
+
+function startThinkLoop() {
+  stopThinkLoop();
+  state.thinkIndex = 0;
+  thinkTimer = setInterval(() => {
+    state.thinkIndex = (state.thinkIndex + 1) % THINK_STAGES.length;
+    if (state.currentStep === 6) renderCurrentStage();
+  }, 1400);
+}
+
+function renderCurrentStage() {
+  if (unmountChips) {
+    unmountChips();
+    unmountChips = null;
+  }
+  const root = $("stage-root");
+  root.innerHTML = renderStage(state.currentStep, stageContext());
+  if (state.currentStep === 2) {
+    const host = $("chip-scroll");
+    if (host) {
+      unmountChips = mountVirtualChips(host, state.report.allPieces, {
+        limit: state.report.counts.limit,
+        format: formatTokenPreview,
+        escapeHtml,
+      });
+      const note = $("chip-note");
+      if (note) {
+        note.textContent = `เลื่อนดูได้ทั้งหมด ${formatTokens(state.report.allPieces.length)} tokens · เขียวอยู่ในลิมิต · แดงคือล้น`;
+      }
+    }
+  }
+  if (state.currentStep === 8) {
+    const host = $("output-chip-scroll");
+    if (host && state.outputTokens.length) {
+      unmountChips = mountVirtualChips(
+        host,
+        state.outputTokens.map((token) => ({ ...token, kind: "user" })),
+        { format: formatTokenPreview, escapeHtml }
+      );
+    }
+  }
+}
+
+function updateChrome() {
+  document.body.classList.toggle("is-simulating", state.started);
+  $("idle-viz").classList.toggle("hidden", state.started);
+  $("stage-root").classList.toggle("hidden", !state.started);
+  $("reset-btn").disabled = !state.started;
+  $("next-btn").disabled = !state.started || state.currentStep >= TOTAL_STEPS;
+  $("restart-btn").classList.toggle("hidden", !state.started);
+  $("next-btn").textContent = state.currentStep >= TOTAL_STEPS ? "จบแล้ว" : "Next →";
+  $("reset-btn").textContent = state.currentStep <= 1 ? "แก้ไข Input" : "ย้อนกลับ";
+
+  const step = getStep(state.currentStep);
+  if (!state.started) {
+    $("step-progress").textContent = "ยังไม่เริ่มจำลอง — กดเริ่มกระบวนการเมื่อพร้อม";
+    $("phase-label").textContent = "Phase 2 · Step-by-step";
+  } else {
+    $("step-progress").textContent = `ขั้นที่ ${state.currentStep} จาก ${TOTAL_STEPS} · ${step.titleTh}`;
+    $("phase-label").textContent = `ขั้น ${state.currentStep} / ${TOTAL_STEPS}`;
+    setCaption(step.caption);
+  }
+}
+
+function applySimulation() {
+  renderSteps();
+  updateChrome();
+  if (state.started) {
+    if (state.currentStep === 6) startThinkLoop();
+    else stopThinkLoop();
+    renderCurrentStage();
+  } else {
+    stopThinkLoop();
+    renderVisualization();
+    renderLiveBadge();
+  }
+  refreshIcons();
 }
 
 function startProcess() {
@@ -396,23 +522,40 @@ function startProcess() {
     return;
   }
 
-  state.started = true;
   state.report = buildReport();
-  renderSteps();
-  renderVisualization();
-  setCaption(
-    state.report.counts.overflow
-      ? "ข้อความถูกแปลงเป็น Token แล้ว และมีส่วนที่ล้น Context Window — ส่วนสีแดงคือสิ่งที่โมเดลอาจอ่านไม่ถึง"
-      : "ข้อความถูกแปลงเป็น Token แล้ว จัดเข้า Context Window ตามลิมิตของโมเดลที่เลือก — นี่คือภาพรวมก่อนเดินทีละขั้น"
-  );
-  $("next-btn").disabled = true;
-  $("next-btn").title = "ระบบกด Next ทีละขั้นจะมาใน Phase 2";
+  state.outputText = generateMockResponse(sourceText());
+  state.outputTokens = tokenizeText(state.outputText);
+  state.started = true;
+  state.currentStep = 1;
+  state.thinkIndex = 0;
+  applySimulation();
 }
 
-function resetProcess() {
+function goToStep(index) {
+  if (!state.started) return;
+  state.currentStep = Math.min(TOTAL_STEPS, Math.max(1, index));
+  applySimulation();
+}
+
+function goNext() {
+  if (!state.started || state.currentStep >= TOTAL_STEPS) return;
+  goToStep(state.currentStep + 1);
+}
+
+function goBack() {
+  if (!state.started) return;
+  if (state.currentStep <= 1) {
+    exitSimulation();
+    return;
+  }
+  goToStep(state.currentStep - 1);
+}
+
+function exitSimulation() {
   state.started = false;
-  renderSteps();
-  setCaption("พิมพ์ข้อความด้านซ้าย แล้วสังเกต Context Window ด้านขวาว่า Token ถูกใช้ไปเท่าไร");
+  state.currentStep = 0;
+  applySimulation();
+  setCaption("กลับไปแก้ไขข้อความได้แล้ว เมื่อพร้อมกดเริ่มกระบวนการอีกครั้ง");
 }
 
 function buildOverflowText(limit) {
@@ -433,6 +576,7 @@ function clearAttachments() {
 }
 
 function loadSample(kind) {
+  if (state.started) exitSimulation();
   clearAttachments();
   renderFiles();
   state.systemPrompt = SAMPLE_SYSTEM;
@@ -509,7 +653,9 @@ function bindEvents() {
   });
 
   $("start-btn").addEventListener("click", startProcess);
-  $("reset-btn").addEventListener("click", resetProcess);
+  $("reset-btn").addEventListener("click", goBack);
+  $("next-btn").addEventListener("click", goNext);
+  $("restart-btn").addEventListener("click", exitSimulation);
   $("sample-btn").addEventListener("click", () => loadSample("normal"));
   $("overflow-btn").addEventListener("click", () => loadSample("overflow"));
   $("mode-overview").addEventListener("click", () => setViewMode("overview"));
@@ -534,7 +680,18 @@ function bindEvents() {
   document.addEventListener("keydown", (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
       event.preventDefault();
-      startProcess();
+      if (!state.started) startProcess();
+      return;
+    }
+    if (state.started && event.target.tagName !== "TEXTAREA" && event.target.tagName !== "INPUT") {
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goNext();
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goBack();
+      }
     }
   });
 }
@@ -566,6 +723,7 @@ async function boot() {
   renderTurns();
   bindEvents();
   setViewMode("overview");
+  updateChrome();
 
   await Promise.all([loadModels(), loadTemplates()]);
   renderModels();
