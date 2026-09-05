@@ -17,7 +17,7 @@ import {
 } from "./models.js";
 import { loadTemplates, generateMockResponse } from "./mock.js";
 import { loadLessons, getLessons, getLesson } from "./lessons.js";
-import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js";
+import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js?v=phone3";
 import { renderStage, THINK_STAGES } from "./stages.js";
 import { mountVirtualChips } from "./virtual-chips.js";
 import { mountDataFlow, typeText } from "./animation.js";

@@ -108,8 +108,10 @@ body {
   height: 100%;
   height: 100dvh;
   height: 100svh;
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -169,6 +171,7 @@ html.light .grid-overlay {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   overflow: hidden;
+  overflow-x: clip;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
@@ -214,6 +217,8 @@ html.light .grid-overlay {
 }
 
 .step-rail {
+  display: flex;
+  width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
   min-width: 0;
@@ -466,6 +471,7 @@ html.light .tank {
   border: 1px solid var(--line);
   padding: 14px 16px;
   background: rgba(255, 255, 255, 0.02);
+  min-width: 0;
 }
 
 .metric-card .label {
@@ -478,6 +484,7 @@ html.light .tank {
   font-size: 22px;
   letter-spacing: -0.04em;
   margin-top: 4px;
+  overflow-wrap: anywhere;
 }
 
 .token-chip {
@@ -943,7 +950,9 @@ html.light .soft-hover:hover {
 
 #idle-viz,
 #stage-root,
-#input-aside {
+#input-aside,
+#metrics,
+#stage-root .grid {
   min-width: 0;
   max-width: 100%;
 }
