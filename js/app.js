@@ -16,12 +16,12 @@ import {
   usagePercent,
 } from "./models.js";
 import { loadTemplates, generateMockResponse } from "./mock.js";
-import { loadLessons, getLessons, getLesson } from "./lessons.js?v=phone3";
-import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js?v=phone3";
-import { renderStage, THINK_STAGES } from "./stages.js?v=phone3";
+import { loadLessons, getLessons, getLesson } from "./lessons.js?v=plain1";
+import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js?v=plain1";
+import { renderStage, THINK_STAGES } from "./stages.js?v=plain1";
 import { mountVirtualChips } from "./virtual-chips.js";
-import { mountDataFlow, typeText } from "./animation.js";
-import { mountThinkLesson, mountModelPeek, pickLessonTokens } from "./model-diagrams.js";
+import { mountDataFlow, typeText } from "./animation.js?v=plain1";
+import { mountThinkLesson, mountModelPeek, pickLessonTokens } from "./model-diagrams.js?v=plain1";
 
 const THINK_DWELL_MS = 11000;
 
@@ -478,9 +478,19 @@ function applyThinkView() {
   const status = $("think-status");
   if (status) status.textContent = stage.plain;
   const title = document.querySelector("#stage-root h2");
-  if (title) title.textContent = `${stage.title} — ${stage.titleTh}`;
+  if (title) title.textContent = stage.titleTh;
   const kicker = $("think-kicker");
-  if (kicker) kicker.textContent = `ขั้นที่ 6 · ชั้น 0${state.thinkIndex + 1} / 04 · ทาย Token ถัดไป`;
+    if (kicker) kicker.textContent = `ขั้นที่ 6 · ${state.thinkIndex + 1} จาก 4 · ทายคำทีละคำ`;
+  const studentNote = $("think-student-note");
+  if (studentNote) {
+    if (stage.studentNote) {
+      studentNote.textContent = stage.studentNote;
+      studentNote.classList.remove("hidden");
+    } else {
+      studentNote.textContent = "";
+      studentNote.classList.add("hidden");
+    }
+  }
   const example = $("think-example");
   if (example) example.textContent = stage.example;
   const inModel = $("think-in-model");

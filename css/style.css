@@ -727,6 +727,24 @@ html.light .soft-hover:hover {
   color: var(--muted);
 }
 
+.teach-note {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 2px solid rgba(129, 140, 248, 0.5);
+  border-radius: 0 10px 10px 0;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+  line-height: 1.55;
+  color: #a1a1aa;
+}
+
+.teach-note span {
+  display: inline-block;
+  margin-right: 6px;
+  font-weight: 600;
+  color: #c7d2fe;
+}
+
 .think-highway,
 .think-diagram {
   overflow: hidden;

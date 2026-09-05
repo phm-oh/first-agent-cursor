@@ -65,10 +65,10 @@ export function diagramForThink(index, lesson) {
 
 export function residualHighway(activeIndex) {
   const stops = [
-    { x: 70, label: "Embedding", sub: "รหัสเป็นจุด", stage: 0 },
-    { x: 280, label: "Attention", sub: "อ่านในหน้าต่าง", stage: 1 },
-    { x: 490, label: "คิดต่อช่อง", sub: "หลังได้อ่านแล้ว", stage: 2 },
-    { x: 700, label: "ทายตัวถัดไป", sub: "เลือก 1 Token", stage: 3 },
+    { x: 70, label: "จำความหมาย", sub: "ชิ้นนี้คืออะไร", stage: 0 },
+    { x: 280, label: "อ่านบริบท", sub: "มองย้อนไปคำก่อน", stage: 1 },
+    { x: 490, label: "คิดต่อ", sub: "สรุปที่คำนั้น", stage: 2 },
+    { x: 700, label: "ทายคำถัดไป", sub: "ทีละคำเท่านั้น", stage: 3 },
   ];
   const nodes = stops
     .map((stop) => {
@@ -86,7 +86,7 @@ export function residualHighway(activeIndex) {
     .join("");
   return `
     <svg class="model-svg highway-svg" viewBox="0 0 780 128" ${NS} aria-label="เส้นข้อมูลหลักอย่างย่อ">
-      <text x="390" y="18" text-anchor="middle" fill="#71717a" font-size="11" ${FONT}>เส้นข้อมูลหลักที่ส่งต่อชั้นต่อชั้น · ภาพแนวคิด</text>
+      <text x="390" y="18" text-anchor="middle" fill="#71717a" font-size="11" ${FONT}>สี่ขั้นที่โมเดลทำซ้ำจนกว่าจะจบคำตอบ</text>
       <path d="M36 58 H 744" stroke="rgba(129,140,248,0.45)" stroke-width="4" stroke-linecap="round"/>
       <path class="d-draw" d="M36 58 H 744" stroke="#818cf8" stroke-width="1.5" fill="none"/>
       ${nodes}
@@ -178,18 +178,18 @@ function embeddingDiagram(lesson) {
     .join("");
   const source = lesson.fromUser ? "Token จากข้อความของคุณ" : "ตัวอย่างในห้อง";
   return `
-    <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพ Embedding">
+    <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพจำความหมาย">
       ${defs()}
-      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>${source}: รหัสยังไม่มีความหมาย จนกว่าจะเปิดตารางแปลงความหมาย</text>
+      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>${source}: ชิ้นข้อความยังไม่มีความหมาย จนกว่าโมเดลจะจำได้ว่าแต่ละชิ้นหมายถึงอะไร</text>
       ${tokenSlots(tokens)}
       ${arrows}
       <g class="d-fade d-d1">
         <rect x="50" y="128" width="660" height="56" rx="14" fill="url(#emb-grad)" stroke="rgba(129,140,248,0.45)"/>
-        <text x="380" y="152" text-anchor="middle" fill="#e0e7ff" font-size="14" ${FONT}>ตารางแปลงความหมาย + ตำแหน่งในประโยค</text>
-        <text x="380" y="172" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>คำที่ความหมายใกล้กัน จะได้จุดที่อยู่ใกล้กัน — สลับลำดับแล้วจุดไม่เหมือนเดิม</text>
+        <text x="380" y="152" text-anchor="middle" fill="#e0e7ff" font-size="14" ${FONT}>จำความหมาย และจำไว้ว่าอยู่ตรงไหนในประโยค</text>
+        <text x="380" y="172" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>คำที่ความหมายใกล้กันอยู่ใกล้กัน — สลับคำแล้วความหมายรวมไม่เหมือนเดิม</text>
       </g>
       <g class="d-fade d-d1">${vectors}</g>
-      <text class="d-fade d-d3" x="380" y="342" text-anchor="middle" fill="#94a3b8" font-size="13" ${FONT}>ตัวเลขในกล่องเป็นภาพสอน · ได้เส้นข้อมูลหนึ่งแถวต่อหนึ่ง Token</text>
+      <text class="d-fade d-d3" x="380" y="342" text-anchor="middle" fill="#94a3b8" font-size="13" ${FONT}>หนึ่งช่องต่อหนึ่งชิ้นข้อความ</text>
     </svg>
   `;
 }
@@ -232,23 +232,23 @@ function attentionDiagram(lesson) {
   const qText = svgEscape(tokens[q]?.text || "ท้าย");
   const kText = svgEscape(tokens[k]?.text || "ต้น");
   return `
-    <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพ Attention">
+    <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพอ่านบริบท">
       ${defs()}
-      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>Token ตัวท้ายมองย้อนไปในหน้าต่างของคุณ — สีเข้ม = อ่านมาก</text>
+      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>คำท้ายมองย้อนไปในข้อความของคุณ — สีเข้ม = อ่านมาก</text>
       ${tokenSlots(tokens)}
       <path class="d-trace" d="M${from.cx} 100 C ${(from.cx + to.cx) / 2} 150, ${(from.cx + to.cx) / 2} 150, ${to.cx} 100" fill="none" stroke="#fb7185" stroke-width="3" marker-end="url(#arr-hot)"/>
-      <text class="d-fade d-d1" x="380" y="128" text-anchor="middle" fill="#fda4af" font-size="13" ${FONT}>«${qText}» อ่าน «${kText}» เป็นหลัก — ภาพสอน ไม่ใช่ค่าที่โมเดลคำนวณ</text>
+      <text class="d-fade d-d1" x="380" y="128" text-anchor="middle" fill="#fda4af" font-size="13" ${FONT}>«${qText}» อ่าน «${kText}» เป็นหลัก</text>
       <g>
-        <text x="148" y="158" text-anchor="middle" fill="#94a3b8" font-size="11" ${FONT}>น้ำหนัก (ภาพสอน ไม่ใช่ค่าจริง)</text>
+        <text x="148" y="158" text-anchor="middle" fill="#94a3b8" font-size="11" ${FONT}>อ่านมากหรือน้อย</text>
         ${headLabels}${sideLabels}${heat}
       </g>
       <g class="d-fade d-d2">
         <rect x="430" y="168" width="290" height="168" rx="14" fill="rgba(99,102,241,0.08)" stroke="rgba(129,140,248,0.35)"/>
-        <text x="575" y="198" text-anchor="middle" fill="#e4e4e7" font-size="13" ${FONT}>ถาม · กุญแจ · ค่าที่จะอ่าน</text>
+        <text x="575" y="198" text-anchor="middle" fill="#e4e4e7" font-size="13" ${FONT}>จำแค่ว่าคำมองหากัน</text>
         <text x="575" y="226" text-anchor="middle" fill="#a1a1aa" font-size="12" ${FONT}>ไม่ต้องจำสูตร</text>
-        <text x="575" y="250" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>จำว่า Token มองหากัน</text>
-        <text x="575" y="278" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>หลายหัว = มองหลายมุมพร้อมกัน</text>
-        <text x="575" y="302" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>แล้วเขียนกลับลงเส้นข้อมูลหลัก</text>
+        <text x="575" y="250" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>เลยรู้ว่า «มัน» ชี้ไปที่ใคร</text>
+        <text x="575" y="278" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>มองได้หลายมุมพร้อมกัน</text>
+        <text x="575" y="302" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>เช่น ใครทำ / ทำอะไร</text>
       </g>
     </svg>
   `;
@@ -258,33 +258,33 @@ function feedForwardDiagram(lesson) {
   const focus = lesson.tokens[lesson.query] || lesson.tokens[0];
   const label = svgEscape(focus?.text || "Token");
   return `
-    <svg class="model-svg" viewBox="0 0 760 340" ${NS} aria-label="แผนภาพ Feed-forward">
+    <svg class="model-svg" viewBox="0 0 760 340" ${NS} aria-label="แผนภาพคิดต่อ">
       ${defs()}
-      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>หลังได้อ่านบริบทแล้ว แปลงทีละช่อง — ช่อง «${label}» ไม่ไปดึงช่องอื่นในรอบนี้</text>
+      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>หลังอ่านบริบทแล้ว คิดต่อที่คำ «${label}» รอบนี้คิดที่คำนี้คำเดียว</text>
       <g>
         <rect x="40" y="90" width="120" height="140" rx="14" fill="${(focus?.color || "#10b981")}22" stroke="${focus?.color || "#34d399"}"/>
         <text x="100" y="148" text-anchor="middle" fill="#fafafa" font-size="14" ${FONT}>${label}</text>
-        <text x="100" y="170" text-anchor="middle" fill="#a1a1aa" font-size="11" ${FONT}>1 ตำแหน่งบนเส้นข้อมูล</text>
+        <text x="100" y="170" text-anchor="middle" fill="#a1a1aa" font-size="11" ${FONT}>คำที่กำลังคิด</text>
       </g>
       <path class="d-trace" d="M160 160 H 214" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arr)"/>
       <g class="d-fade d-d1">
         <rect x="216" y="60" width="160" height="200" rx="14" fill="rgba(99,102,241,0.18)" stroke="#818cf8"/>
-        <text x="296" y="150" text-anchor="middle" fill="#e0e7ff" font-size="14" ${FONT}>ขยายแล้วบีบ</text>
+        <text x="296" y="150" text-anchor="middle" fill="#e0e7ff" font-size="14" ${FONT}>สรุปในหัว</text>
         <text x="296" y="174" text-anchor="middle" fill="#a5b4fc" font-size="12" ${FONT}>คิดต่อหลังได้อ่านแล้ว</text>
       </g>
       <path class="d-trace d-d2" d="M376 160 H 430" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arr)"/>
       <g class="d-fade d-d2">
         <rect x="432" y="90" width="120" height="140" rx="14" fill="rgba(16,185,129,0.14)" stroke="#34d399"/>
         <text x="492" y="154" text-anchor="middle" fill="#ecfdf5" font-size="14" ${FONT}>ความหมายใหม่</text>
-        <text x="492" y="176" text-anchor="middle" fill="#6ee7b7" font-size="11" ${FONT}>บวกของเดิมกลับเข้าเส้นหลัก</text>
+        <text x="492" y="176" text-anchor="middle" fill="#6ee7b7" font-size="11" ${FONT}>ยังเก็บของเดิมไว้</text>
       </g>
       <g class="d-fade d-d3">
         <rect x="572" y="90" width="160" height="140" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
-        <text x="652" y="140" text-anchor="middle" fill="#e4e4e7" font-size="13" ${FONT}>อ่านบริบท + คิดต่อช่อง</text>
-        <text x="652" y="164" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>ซ้อนหลายสิบชั้น</text>
-        <text x="652" y="188" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>นี่คือตัวโมเดลส่วนใหญ่</text>
+        <text x="652" y="140" text-anchor="middle" fill="#e4e4e7" font-size="13" ${FONT}>อ่านแล้วคิดต่อ</text>
+        <text x="652" y="164" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>ทำซ้ำหลายรอบ</text>
+        <text x="652" y="188" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>ยังอยู่ในข้อความรอบนี้</text>
       </g>
-      <text class="d-fade d-d3" x="380" y="318" text-anchor="middle" fill="#94a3b8" font-size="13" ${FONT}>เส้นโค้งที่บวกของเดิม = ไม่ให้ข้อมูลเก่าบนเส้นหลักหาย</text>
+      <text class="d-fade d-d3" x="380" y="318" text-anchor="middle" fill="#94a3b8" font-size="13" ${FONT}>เก็บของเดิมไว้ = ไม่ให้สิ่งที่อ่านมาแล้วหายไประหว่างคิด</text>
     </svg>
   `;
 }
@@ -297,28 +297,28 @@ function generationDiagram(lesson) {
     .map((item, i) => probBar(68, 172 + i * 36, Math.round(item.pct * 400), item.pct, item.text, i === 0))
     .join("");
   return `
-    <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพ Generation">
+    <svg class="model-svg" viewBox="0 0 760 360" ${NS} aria-label="แผนภาพทายคำถัดไป">
       ${defs()}
-      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>หัวใจที่ใช้สอน: ทายแค่ตัวถัดไป แล้ววนใหม่</text>
+      <text x="380" y="24" text-anchor="middle" fill="#a1a1aa" font-size="13" ${FONT}>โมเดลทายแค่คำถัดไป แล้ววนใหม่ ไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว</text>
       ${shown
         .map((token, i) => tokenBox(48 + i * 120, 46, token.text, "มีแล้ว", token.color))
         .join("")}
       <rect class="d-glow" x="${48 + shown.length * 120}" y="46" width="100" height="52" rx="12" fill="rgba(244,63,94,0.16)" stroke="#fb7185" stroke-dasharray="5 4"/>
       <text x="${98 + shown.length * 120}" y="70" text-anchor="middle" fill="#fda4af" font-size="16" ${FONT}>?</text>
       <text x="${98 + shown.length * 120}" y="88" text-anchor="middle" fill="#fb7185" font-size="10" ${FONT}>กำลังทาย</text>
-      <text x="520" y="68" fill="#94a3b8" font-size="12" ${FONT}>ชั้นท้ายอ่านช่องล่าสุดบนเส้นข้อมูล</text>
-      <text x="520" y="88" fill="#64748b" font-size="11" ${FONT}>แตกเป็นคะแนนของทั้งคลังคำ</text>
+      <text x="520" y="68" fill="#94a3b8" font-size="12" ${FONT}>ดูคำล่าสุด แล้วเรียงคำที่อาจมาต่อ</text>
+      <text x="520" y="88" fill="#64748b" font-size="11" ${FONT}>เลือกได้แค่หนึ่งคำต่อรอบ</text>
       <g class="d-fade d-d1">
         <rect x="48" y="128" width="430" height="168" rx="16" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)"/>
-        <text x="68" y="154" fill="#e4e4e7" font-size="13" ${FONT}>ความน่าจะเป็น (ภาพสอน ไม่ใช่ค่าจริง)</text>
+        <text x="68" y="154" fill="#e4e4e7" font-size="13" ${FONT}>คำที่อาจมาต่อ</text>
         ${bars}
       </g>
       <g class="d-fade d-d2">
         <rect x="500" y="128" width="230" height="168" rx="16" fill="rgba(99,102,241,0.1)" stroke="rgba(129,140,248,0.4)"/>
-        <text x="615" y="164" text-anchor="middle" fill="#e0e7ff" font-size="13" ${FONT}>เลือก 1 Token</text>
+        <text x="615" y="164" text-anchor="middle" fill="#e0e7ff" font-size="13" ${FONT}>เลือก 1 คำ</text>
         <text x="615" y="196" text-anchor="middle" fill="#c7d2fe" font-size="18" ${FONT}>${svgEscape(pick?.text || "·")}</text>
-        <text x="615" y="224" text-anchor="middle" fill="#a1a1aa" font-size="12" ${FONT}>ต่อท้ายหน้าต่าง</text>
-        <text x="615" y="248" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>แล้ววนแปลงรหัส → อ่าน → คิดต่อ</text>
+        <text x="615" y="224" text-anchor="middle" fill="#a1a1aa" font-size="12" ${FONT}>ต่อท้ายแล้วทายใหม่</text>
+        <text x="615" y="248" text-anchor="middle" fill="#94a3b8" font-size="12" ${FONT}>ไม่ต้องตั้งค่าในหน้านี้</text>
         <text x="615" y="272" text-anchor="middle" fill="#64748b" font-size="11" ${FONT}>จนกว่าจะจบคำตอบ</text>
       </g>
     </svg>
@@ -364,9 +364,10 @@ export function mountThinkLesson(container, index, lesson) {
   const source = ctx.fromUser ? "ใช้ Token จากข้อความที่คุณพิมพ์" : "ยังไม่มีข้อความพอ — ใช้ตัวอย่างในห้อง";
   container.innerHTML = `
     <div class="think-lab">
-      <p class="think-disclaimer thai">${source} · น้ำหนักและเปอร์เซ็นต์เป็นภาพสอน ไม่ใช่ค่าที่โมเดลคำนวณ</p>
+      <p class="think-disclaimer thai">${source}</p>
       <div class="think-highway glass panel p-3">${residualHighway(index)}</div>
       <div class="think-diagram glass panel p-3">${diagramForThink(index, ctx)}</div>
+      <p class="teach-note thai"><span>หมายเหตุ</span> ข้อความและตัวเลขที่แสดง เป็นข้อมูลตัวอย่างประกอบการอธิบาย</p>
     </div>
   `;
 }
@@ -378,12 +379,14 @@ export function mountModelPeek(container) {
       <div class="think-highway glass panel p-3">${residualHighway(-1)}</div>
       <div class="glass panel p-4 sm:p-5">
         <p class="help-kicker">ก่อนเข้าชั้นในโมเดล</p>
-        <h3 class="thai text-base font-medium mt-2">ทาย Token ถัดไป — ที่เหลือเป็นวิธีทำให้ทายได้ดี</h3>
+        <h3 class="thai text-base font-medium mt-2">ต่อไปโมเดลจะทายแค่คำถัดไป</h3>
+        <p class="thai text-sm text-zinc-400 mt-2">ที่เหลือคือวิธีทำให้ทายได้ดีขึ้น ไม่ต้องตั้งค่าอะไรในขั้นนี้</p>
         <ol class="mt-3 space-y-2 thai text-sm text-zinc-300 leading-relaxed list-decimal pl-5">
-          <li>เริ่มจากข้อความจริงในกล่อง: หั่นเป็น Token สี แล้วถามว่าตัวต่อไปคืออะไร</li>
-          <li>เส้นข้อมูลหลักส่งต่อชั้นต่อชั้น: อ่านบริบทในหน้าต่าง แล้วคิดต่อที่ช่องนั้น</li>
-          <li>เดินทีละขั้น ประโยคเดียวต่อจอ และแยกว่าอะไรมาจากข้อความคุณ อะไรเป็นภาพสอน</li>
+          <li>เอาข้อความที่หั่นแล้วมาถามว่า คำต่อไปคืออะไร</li>
+          <li>อ่านบริบท แล้วคิดต่อที่คำนั้น</li>
+          <li>เลือกหนึ่งคำ ต่อท้าย แล้วทายใหม่จนกว่าจะจบ</li>
         </ol>
+        <p class="teach-note thai mt-4"><span>หมายเหตุ</span> ข้อความและตัวเลขที่แสดง เป็นข้อมูลตัวอย่างประกอบการอธิบาย</p>
       </div>
     </div>
   `;

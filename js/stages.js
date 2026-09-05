@@ -2,82 +2,90 @@
  * Per-step teaching views.
  */
 
+export const SAMPLE_NOTE = "ข้อความและตัวเลขที่แสดง เป็นข้อมูลตัวอย่างประกอบการอธิบาย";
+
 export const THINK_STAGES = [
   {
     id: "embed",
     title: "Embedding",
-    titleTh: "แปลงรหัสเป็นความหมาย",
-    plain: "หลังหั่นข้อความแล้ว โมเดลเห็นแค่เลขรหัส ต้องแปลงเป็นจุดบนแผนที่ความหมายก่อน",
-    detail: "Embedding คือตารางเปิดความหมายของแต่ละรหัส แล้วบอกว่าอยู่ตำแหน่งไหนในประโยค",
-    caption: "Token จากข้อความของคุณถูกแปลงเป็นจุด แล้วโมเดลจึงทายคำตอบได้",
-    example: "ใช้ Token จริงจากกล่องที่คุณพิมพ์ ไม่ใช่ประโยคคนละชุด — สลับลำดับแล้วจุดจะไม่เหมือนเดิม",
-    inModel: "จุดแรกบนเส้นข้อมูลหลัก ก่อนชั้น Attention จะอ่านบริบท",
+    titleTh: "จำได้ว่าชิ้นนี้หมายถึงอะไร",
+    cardTitle: "จำความหมาย",
+    plain: "หลังหั่นข้อความแล้ว โมเดลยังเห็นแค่ชิ้นเล็ก ๆ ขั้นนี้ทำให้แต่ละชิ้นมีความหมาย เช่น คำว่า «แมว» อยู่ใกล้ «หมา» มากกว่า «โต๊ะ»",
+    detail: "ชื่อในงานจริงคือ Embedding — ทำให้แต่ละชิ้นมีความหมาย แล้วจำไว้ด้วยว่าอยู่ตรงไหนในประโยค",
+    caption: "แต่ละชิ้นข้อความถูกจำว่าหมายถึงอะไร แล้วโมเดลจึงทายคำต่อไปได้",
+    example: "ใช้ชิ้นจากข้อความที่คุณพิมพ์ ถ้าสลับคำ ความหมายทั้งประโยคจะไม่เหมือนเดิม",
+    inModel: "ขั้นแรก: ทำให้แต่ละชิ้นมีความหมาย และจำตำแหน่งในประโยค",
+    studentNote: "",
     bullets: [
-      "หลังหั่นเป็น Token เหลือแค่เลขรหัส — ยังไม่รู้ว่าคำใกล้กันหรือตรงข้าม",
-      "ตาราง Embedding มีแถวเท่าคลังคำ แต่ละแถวเป็นตัวเลขหลายร้อยถึงหลายพันค่า",
-      "คำที่ความหมายใกล้กัน มักได้จุดที่อยู่ใกล้กัน",
-      "บวกตำแหน่ง เพื่อแยกประโยคที่คำเหมือนกันแต่ลำดับต่างกัน",
-      "ผลลัพธ์คือเส้นข้อมูลหลัก หนึ่งแถวต่อหนึ่งช่องในหน้าต่างบริบท",
+      "หลังหั่นแล้ว โมเดลยังไม่รู้ว่าคำไหนใกล้กันหรือตรงข้าม",
+      "คำที่ความหมายใกล้กัน มักถูกวางไว้ใกล้กัน",
+      "ลำดับคำสำคัญ เพราะประโยคเดียวกันถ้าสลับคำ ความหมายเปลี่ยน",
+      "จากนั้นแต่ละชิ้นก็พร้อมให้โมเดลอ่านต่อ",
     ],
   },
   {
     id: "attention",
     title: "Attention",
-    titleTh: "อ่านบริบทในหน้าต่าง",
-    plain: "Token ตัวท้ายมองย้อนไปในหน้าต่าง แล้วตัดสินว่าควรอ่านตัวไหนมาก",
-    detail: "Attention ให้แต่ละ Token อ่าน Token อื่นในหน้าต่างตามน้ำหนัก — นี่คือบริบท",
-    caption: "ชั้นนี้คือการอ่านและเขียนบนเส้นข้อมูลหลัก ไม่ใช่ความจำระยะยาว",
-    example: "ภาพสอน: Token ล่าสุดชี้กลับไป Token แรก — สีเข้มกว่าไม่ได้มาจากการคำนวณจริง",
-    inModel: "จุด Attention บนเส้นข้อมูลหลัก ทำหลายหัว แล้วเขียนกลับลงเส้นเดิม",
+    titleTh: "มองย้อนไปอ่านบริบท",
+    cardTitle: "อ่านบริบท",
+    plain: "คำท้ายประโยคมองย้อนไปคำก่อนหน้า เพื่อรู้ว่ากำลังพูดถึงใคร เช่น คำว่า «มัน» ชี้ไปที่แมว",
+    detail: "ชื่อในงานจริงคือ Attention — ให้แต่ละชิ้นอ่านชิ้นอื่นในข้อความรอบนี้ ไม่ใช่ความจำระยะยาวแบบคน",
+    caption: "ขั้นนี้คือการอ่านของที่มีอยู่ในข้อความรอบนี้ ไม่ใช่การจำเรื่องเก่าทั้งชีวิต",
+    example: "ในตัวอย่าง คำท้ายชี้กลับไปคำแรก สีเข้มหมายถึงอ่านมาก",
+    inModel: "ขั้นนี้ให้ชิ้นข้อความมองหากันในข้อความเดียวกัน",
+    studentNote: "",
     bullets: [
-      "สร้างสามชุดจากค่าเดิม: คำถาม กุญแจ และค่าที่จะอ่าน",
-      "น้ำหนักในแผนภาพเป็นภาพสอน ให้เห็นว่าอ่านมากหรือน้อย ไม่ใช่ค่าจากโมเดล",
-      "เลยจับสรรพนามกับคำนามได้ โดยไม่ต้องมีกฎไวยากรณ์แยก",
-      "ทำพร้อมกันทั้งลำดับในหน้าต่างเดียวกัน",
-      "หลายหัว = มองหลายมุม เช่น ใครทำ / ทำอะไร / ชี้กลับไปใคร",
+      "จำแค่ว่าคำมองหากัน เพื่อรู้บริบท",
+      "เลยจับได้ว่า «มัน» ชี้ไปที่ใคร โดยไม่ต้องท่องกฎไวยากรณ์",
+      "มองได้หลายมุมพร้อมกัน เช่น ใครทำ / ทำอะไร / ชี้กลับไปใคร",
+      "อ่านได้เฉพาะข้อความที่อยู่ในรอบนี้",
     ],
   },
   {
     id: "ffn",
     title: "Feed-forward",
-    titleTh: "คิดต่อทีละช่อง",
-    plain: "หลังอ่านบริบทแล้ว ชั้นนี้คิดต่อที่ช่องนั้นช่องเดียว ไม่ดึง Token อื่นมาปน",
-    detail: "ชั้น Feed-forward แปลงความหมายของตำแหน่งนั้น หลัง Attention รวมบริบทแล้ว",
-    caption: "บนเส้นข้อมูลหลัก: Attention อ่านของคนอื่น ชั้นนี้สรุปของช่องนี้",
-    example: "ช่อง Token ล่าสุดของคุณมีบริบทจากต้นประโยคแล้ว ชั้นนี้คิดต่อที่ช่องนั้น",
-    inModel: "จุด Feed-forward บนเส้นข้อมูลหลัก คู่กับ Attention ถูกซ้อนหลายสิบชั้น",
+    titleTh: "คิดต่อที่คำนั้น",
+    cardTitle: "คิดต่อ",
+    plain: "พอรู้บริบทแล้ว โมเดลคิดต่อที่คำนั้นคำเดียว เหมือนอ่านทั้งประโยคแล้วสรุปในหัวที่คำสุดท้าย",
+    detail: "ชื่อในงานจริงคือ Feed-forward — คิดต่อที่คำนั้นหลังอ่านบริบทแล้ว ไม่ดึงคำอื่นมาปนในรอบนี้",
+    caption: "อ่านบริบทเสร็จแล้ว คิดต่อที่คำนี้คำเดียว",
+    example: "คำท้ายของคุณมีบริบทจากต้นประโยคแล้ว ขั้นนี้คิดต่อที่คำนั้น",
+    inModel: "ขั้นนี้สรุปความหมายของคำนั้น แล้วยังเก็บของเดิมไว้ด้วย",
+    studentNote: "",
     bullets: [
-      "ต่างจาก Attention: ไม่ดึงช่องอื่นมาปนในรอบนี้",
-      "ขยายจำนวนค่า แล้วบีบกลับ เพื่อคิดต่อหลังได้อ่านแล้ว",
-      "บวกของเดิมกลับเข้าเส้นหลัก เพื่อไม่ให้ข้อมูลเก่าหาย",
-      "คู่ Attention กับ Feed-forward คือตัวโมเดลส่วนใหญ่",
-      "ซ้อนหลายชั้นแต่ยังทำงานในหน้าต่างบริบทเดิม",
+      "ต่างจากขั้นอ่านบริบท: รอบนี้คิดที่คำนี้คำเดียว",
+      "คิดต่อหลังได้อ่านแล้ว แล้วเก็บของเดิมไว้ไม่ให้หาย",
+      "อ่านบริบทกับคิดต่อ มักถูกทำซ้ำหลายรอบ",
+      "ยังทำงานในข้อความรอบนี้เท่านั้น",
     ],
   },
   {
     id: "generate",
     title: "Generation",
-    titleTh: "ทาย Token ถัดไป",
-    plain: "ทายได้ทีละตัว ต่อท้ายหน้าต่าง แล้ววนทั้งเส้นใหม่",
-    detail: "คำตอบเกิดทีละตัว จากคลังคำ แชทที่คุ้นเคยเขียนบนจอแบบนี้",
-    caption: "หัวใจที่ใช้สอน: โมเดลไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
-    example: "แถบเปอร์เซ็นต์เป็นภาพสอน สมมติบนคำตอบจำลองของคุณ ไม่ใช่คะแนนจริงของโมเดล",
-    inModel: "จุดท้ายเส้นข้อมูลหลัก แล้ววนกลับไปแปลงรหัสเป็นจุดอีกครั้ง",
+    titleTh: "ทายคำถัดไปทีละคำ",
+    cardTitle: "ทายคำถัดไป",
+    plain: "โมเดลดูคำที่อาจมาต่อ แล้วเลือกแค่หนึ่งคำ ต่อท้าย แล้วทายใหม่จนกว่าจะจบ ไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
+    detail: "คำตอบเกิดทีละคำ แชทที่คุ้นเคยเขียนบนจอแบบนี้",
+    caption: "โมเดลทายทีละคำ แล้วต่อท้ายไปเรื่อย ๆ จนจบคำตอบ",
+    example: "แถบเปอร์เซ็นต์ช่วยให้เห็นว่าคำไหนดูเข้ากับเรื่องมากกว่า",
+    inModel: "ขั้นสุดท้าย: เลือกหนึ่งคำ แล้ววนกลับไปคิดคำถัดไปอีกครั้ง",
+    studentNote:
+      "ในหน้านี้ไม่ต้องตั้งค่าอะไร เครื่องมือจะทายคำที่ดูเข้ากับเรื่องที่สุดให้ดู ถ้าเคยได้ยินคำว่า temperature นั่นคือระดับความสุ่มตอนทายคำ ไม่ใช่ความร้อน และไม่ต้องกรอกที่นี่",
     bullets: [
-      "ช่องล่าสุดบนเส้นข้อมูลหลักถูกแปลงเป็นคะแนนของทั้งคลังคำ",
-      "แถบเปอร์เซ็นต์ในหน้านี้เป็นภาพสอน ไม่ใช่คะแนนจริงของโมเดล",
-      "เลือกตัวที่สูงสุด หรือสุ่มเล็กน้อย ได้แค่ 1 Token",
-      "ต่อท้ายหน้าต่าง แล้ววน Embedding → Attention → Feed-forward",
-      "หยุดเมื่อจบหรือครบจำนวน — นี่คือที่มาของคำตอบทีละคำ",
+      "โมเดลไม่ได้พิมพ์ทั้งย่อหน้าในครั้งเดียว",
+      "มันดูคำที่อาจมาต่อ แล้วเลือกแค่ 1 คำ",
+      "หน้านี้ทายคำที่ดูเข้ากับเรื่องที่สุดให้ดู ไม่ต้องตั้งค่า",
+      "คำว่า temperature คือสุ่มมากหรือน้อยตอนทายคำ ไม่ใช่ความร้อน",
+      "ต่อท้ายแล้วทายใหม่ จนจบคำตอบ",
     ],
   },
 ];
 
 export const SPECIAL_TOKENS = [
-  { id: "bos", text: "<|im_start|>", role: "structure", note: "จุดเริ่มลำดับ" },
-  { id: "sys", text: "system", role: "role", note: "บทบาทระบบ" },
-  { id: "user", text: "user", role: "role", note: "บทบาทผู้ใช้" },
-  { id: "eos", text: "<|im_end|>", role: "structure", note: "จุดจบข้อความ" },
+  { id: "bos", text: "<|im_start|>", role: "structure", note: "เริ่มข้อความ" },
+  { id: "sys", text: "system", role: "role", note: "ป้ายคำสั่งของครู" },
+  { id: "user", text: "user", role: "role", note: "ป้ายคำถามของนักเรียน" },
+  { id: "eos", text: "<|im_end|>", role: "structure", note: "จบข้อความ" },
 ];
 
 export function renderStage(step, ctx) {
@@ -305,15 +313,15 @@ function renderDispatchStage(ctx) {
   return `
     <div class="stage-head">
       <p class="help-kicker">ขั้นที่ 5</p>
-      <h2 class="thai text-xl font-semibold mt-1">จัดลำดับแล้วส่งเข้าโมเดล</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">ดูเส้นทางข้อมูล: ข้อความถูกจัดลำดับ ใส่เครื่องหมายพิเศษ แล้วไหลเข้าโมเดล</p>
+      <h2 class="thai text-xl font-semibold mt-1">ติดป้ายว่าใครพูด แล้วส่งเข้าโมเดล</h2>
+      <p class="thai text-sm text-zinc-400 mt-2">ก่อนโมเดลอ่าน ระบบเขียนชื่อไว้ว่าข้อความไหนเป็นคำสั่งครู และข้อความไหนเป็นคำถามนักเรียน เหมือนเขียนชื่อผู้พูดบนกระดาษ</p>
     </div>
     <div id="data-flow" class="glass panel p-4 mt-5 overflow-hidden"></div>
     <div class="glass panel p-5 mt-4">
-      <p class="help-kicker">เครื่องหมายพิเศษที่ถูกเพิ่ม</p>
+      <p class="help-kicker">ป้ายบอกว่าใครพูด</p>
       <div class="flex flex-wrap gap-1.5 mt-3">${chips}</div>
-      <p class="thai text-sm text-zinc-400 mt-4">โครงที่ใช้สอน: เริ่ม → ระบบ → ผู้ใช้ → จบ ตามด้วยเนื้อหา ${formatTokens(report.counts.input)} Token</p>
-      <p class="mono text-xs text-indigo-300 mt-2">+${extras} เครื่องหมายพิเศษ (เชิงแนวคิด)</p>
+      <p class="thai text-sm text-zinc-400 mt-4">ลำดับที่ใช้ในห้องนี้: เริ่ม → คำสั่งครู → คำถามนักเรียน → จบ แล้วตามด้วยเนื้อหา ${formatTokens(report.counts.input)} Token</p>
+      <p class="teach-note thai mt-3"><span>หมายเหตุ</span> ป้ายเหล่านี้เป็นข้อมูลตัวอย่างประกอบการอธิบาย · เพิ่ม ${extras} ป้าย</p>
     </div>
     <div id="model-peek" class="mt-4"></div>
   `;
@@ -326,9 +334,8 @@ function renderThinkStage(ctx) {
   const cards = THINK_STAGES.map((stage, i) => {
     const active = i === index;
     return `<button type="button" class="think-card ${active ? "active" : ""}" data-think="${i}">
-      <p class="mono text-[10px] text-zinc-500">0${i + 1}</p>
-      <h3 class="font-medium mt-0.5 text-sm">${escape(ctx, stage.title)}</h3>
-      <p class="thai text-xs text-zinc-500 mt-0.5">${escape(ctx, stage.titleTh)}</p>
+      <p class="mono text-[10px] text-zinc-500">ขั้นย่อย ${i + 1}</p>
+      <h3 class="thai font-medium mt-0.5 text-sm leading-snug">${escape(ctx, stage.cardTitle || stage.titleTh)}</h3>
     </button>`;
   }).join("");
   const bullets = current.bullets
@@ -337,9 +344,14 @@ function renderThinkStage(ctx) {
 
   return `
     <div class="stage-head">
-      <p id="think-kicker" class="help-kicker">ขั้นที่ 6 · หนึ่งเรื่องเดียว · ทาย Token ถัดไป</p>
-      <h2 class="thai text-xl font-semibold mt-1">${escape(ctx, current.title)} — ${escape(ctx, current.titleTh)}</h2>
+      <p id="think-kicker" class="help-kicker">ขั้นที่ 6 · ${index + 1} จาก 4 · ทายคำทีละคำ</p>
+      <h2 class="thai text-xl font-semibold mt-1">${escape(ctx, current.titleTh)}</h2>
       <p id="think-status" class="thai text-sm text-zinc-400 mt-2">${escape(ctx, current.plain)}</p>
+      ${
+        current.studentNote
+          ? `<p id="think-student-note" class="thai text-sm text-zinc-300 mt-3 leading-relaxed glass panel p-3">${escape(ctx, current.studentNote)}</p>`
+          : `<p id="think-student-note" class="hidden"></p>`
+      }
     </div>
     <div id="think-dwell" class="think-dwell playing mt-4" style="--think-ms: 11s"><span></span></div>
     <div class="flex flex-wrap items-center justify-between gap-2 mt-3">
@@ -355,13 +367,13 @@ function renderThinkStage(ctx) {
       <div class="grid md:grid-cols-2 gap-3 mt-4">
         <article class="glass panel p-4 sm:p-5">
           <p class="help-kicker">รายละเอียดสำหรับครู</p>
-          <p class="thai text-xs text-zinc-500 mt-2">ตัวเลขในแผนภาพเป็นภาพสอน ไม่ได้รันโมเดลจริง</p>
+          <p class="teach-note thai mt-2"><span>หมายเหตุ</span> ${SAMPLE_NOTE}</p>
           <ul id="think-bullets" class="mt-3 space-y-2 list-disc pl-5">${bullets}</ul>
         </article>
         <article class="glass panel p-4 sm:p-5">
           <p class="help-kicker">จากข้อความนี้</p>
           <p id="think-example" class="thai text-sm text-zinc-300 mt-3 leading-relaxed">${escape(ctx, current.example)}</p>
-          <p class="help-kicker mt-4">อยู่ตรงไหนบนเส้นข้อมูลหลัก</p>
+          <p class="help-kicker mt-4">ตอนนี้อยู่ขั้นตอนไหน</p>
           <p id="think-in-model" class="thai text-sm text-zinc-300 mt-2 leading-relaxed">${escape(ctx, current.inModel)}</p>
         </article>
       </div>
@@ -379,17 +391,18 @@ function renderOutputStage(ctx) {
   return `
     <div class="stage-head">
       <p class="help-kicker">ขั้นที่ 7</p>
-      <h2 class="thai text-xl font-semibold mt-1">สร้างคำตอบจำลอง</h2>
-      <p class="thai text-sm text-zinc-400 mt-2">คำตอบถูกประกอบทีละ Token จากชุดข้อความสอน ไม่ได้เรียกบริการจริง</p>
+      <h2 class="thai text-xl font-semibold mt-1">พิมพ์คำตอบขึ้นจอทีละคำ</h2>
+      <p class="thai text-sm text-zinc-400 mt-2">คำที่ทายได้จะพิมพ์ขึ้นจอทีละคำ เหมือนคนพิมพ์ ไม่ใช่การวางทั้งย่อหน้าในครั้งเดียว</p>
     </div>
     <article class="glass panel p-5 mt-5">
       <div class="flex items-center gap-2">
         <span class="status-dot ready"></span>
-        <p class="help-kicker">กำลังเขียนคำตอบ</p>
+        <p class="help-kicker">กำลังพิมพ์คำตอบ</p>
       </div>
       <div id="typed-output" class="thai text-sm leading-relaxed whitespace-pre-wrap mt-3 min-h-[6rem]"></div>
     </article>
     <p class="mono text-xs text-zinc-500 mt-3">คำตอบประมาณ ${formatTokens(outputTokens.length)} Token</p>
+    <p class="teach-note thai mt-3"><span>หมายเหตุ</span> คำตอบที่พิมพ์ขึ้นจอ เป็นข้อมูลตัวอย่างประกอบการอธิบาย ไม่ได้คุยกับโมเดลจริง</p>
   `;
 }
 

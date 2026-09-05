@@ -44,7 +44,7 @@ export function mountDataFlow(container) {
     </svg>
     <div class="flow-labels">
       <span>ข้อความเข้า</span>
-      <span>จัดลำดับ + เครื่องหมายพิเศษ</span>
+      <span>ติดป้ายว่าใครพูด</span>
       <span>โมเดล</span>
     </div>
   `;
@@ -56,7 +56,7 @@ export function mountDataFlow(container) {
 export function mountThinkFlow(container) {
   if (!container) return () => {};
   container.innerHTML = `
-    <svg class="flow-svg think-svg" viewBox="0 0 900 160" role="img" aria-label="จำลอง Attention และ Generation">
+    <svg class="flow-svg think-svg" viewBox="0 0 900 160" role="img" aria-label="จำลองการอ่านบริบทแล้วทายคำถัดไป">
       <path d="M70 80 H 830" fill="none" stroke="rgba(99,102,241,0.35)" stroke-width="2"/>
       ${[0, 1, 2, 3, 4, 5, 6]
         .map((i) => {
