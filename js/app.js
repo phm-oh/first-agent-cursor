@@ -16,9 +16,9 @@ import {
   usagePercent,
 } from "./models.js";
 import { loadTemplates, generateMockResponse } from "./mock.js";
-import { loadLessons, getLessons, getLesson } from "./lessons.js";
+import { loadLessons, getLessons, getLesson } from "./lessons.js?v=phone3";
 import { STEPS, TOTAL_STEPS, getStep } from "./simulation.js?v=phone3";
-import { renderStage, THINK_STAGES } from "./stages.js";
+import { renderStage, THINK_STAGES } from "./stages.js?v=phone3";
 import { mountVirtualChips } from "./virtual-chips.js";
 import { mountDataFlow, typeText } from "./animation.js";
 import { mountThinkLesson, mountModelPeek, pickLessonTokens } from "./model-diagrams.js";
